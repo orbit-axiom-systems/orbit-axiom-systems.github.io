@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit Axiom Systems | Real-Time Satellite Drag Forecasting</title>
+    <meta name="description" content="Direct atmospheric measurement for satellite operations. Real-time drag forecasting through the Orion Grid constellation.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent: #4a9eff;
+            --accent-dim: #2a5a9a;
+            --accent-glow: rgba(74, 158, 255, 0.15);
+            --border: #2a2a35;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Instrument Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 4rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(74, 158, 255, 0.08), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(74, 158, 255, 0.04), transparent);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero h1 span {
+            color: var(--accent);
+        }
+        
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .btn-primary:hover {
+            background: #5aafff;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 4rem;
+            margin-top: 5rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+        
+        /* Sections */
+        section {
+            padding: 8rem 4rem;
+        }
+        
+        .section-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+        
+        /* Problem Section */
+        .problem {
+            background: var(--bg-secondary);
+        }
+        
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .problem-card {
+            padding: 2rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        
+        .problem-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        /* Solution Section */
+        .solution {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+        
+        .solution-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+            margin-top: 4rem;
+        }
+        
+        .solution-visual {
+            position: relative;
+            height: 400px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .orbit-visualization {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        
+        .earth {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #1a4a7a, #0a2a4a);
+            border-radius: 50%;
+            box-shadow: 
+                inset -10px -10px 20px rgba(0,0,0,0.5),
+                0 0 40px rgba(74, 158, 255, 0.2);
+        }
+        
+        .orbit-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 1px solid var(--accent-dim);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        
+        .orbit-ring-1 {
+            width: 160px;
+            height: 160px;
+            transform: translate(-50%, -50%) rotateX(70deg);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .orbit-ring-2 {
+            width: 220px;
+            height: 220px;
+            transform: translate(-50%, -50%) rotateX(70deg) rotateZ(30deg);
+            animation: rotate 25s linear infinite reverse;
+        }
+        
+        .orbit-ring-3 {
+            width: 280px;
+            height: 280px;
+            transform: translate(-50%, -50%) rotateX(70deg) rotateZ(60deg);
+            animation: rotate 30s linear infinite;
+        }
+        
+        .satellite {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        .satellite-1 {
+            top: 20%;
+            left: 50%;
+            animation: orbit1 20s linear infinite;
+        }
+        
+        .satellite-2 {
+            top: 50%;
+            right: 10%;
+            animation: orbit2 25s linear infinite;
+        }
+        
+        .satellite-3 {
+            bottom: 25%;
+            left: 30%;
+            animation: orbit3 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); }
+            to { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); }
+        }
+        
+        @keyframes orbit1 {
+            0% { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+        }
+        
+        @keyframes orbit2 {
+            0% { transform: rotate(120deg) translateX(110px) rotate(-120deg); }
+            100% { transform: rotate(480deg) translateX(110px) rotate(-480deg); }
+        }
+        
+        @keyframes orbit3 {
+            0% { transform: rotate(240deg) translateX(140px) rotate(-240deg); }
+            100% { transform: rotate(600deg) translateX(140px) rotate(-600deg); }
+        }
+        
+        .solution-features {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .feature {
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border);
+        }
+        
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        /* Technology Section */
+        .technology {
+            background: var(--bg-secondary);
+        }
+        
+        .pipeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4rem;
+            padding: 3rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .pipeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-dim), var(--accent), var(--accent-dim));
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .pipeline-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .pipeline-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 1.5;
+        }
+        
+        .pipeline-step h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .pipeline-step span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Market Section */
+        .market {
+            background: var(--bg-primary);
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .market-card {
+            padding: 2.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .market-card.highlight {
+            border-color: var(--accent-dim);
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        }
+        
+        .market-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .market-label {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .market-detail {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .market-source {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        
+        /* Founder Section */
+        .founder {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+        
+        .founder-content {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+            align-items: start;
+        }
+        
+        .founder-image {
+            width: 220px;
+            height: 220px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .founder-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .founder-info h3 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .founder-title {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .founder-bio {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .founder-credentials {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .credential {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .credential a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .credential a:hover {
+            color: var(--accent);
+        }
+        
+        .founder-links {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .founder-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .founder-links a:hover {
+            color: var(--accent);
+        }
+        
+        .founder-links svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Contact Section */
+        .contact {
+            background: var(--bg-primary);
+            text-align: center;
+        }
+        
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .contact-email {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-block;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-email:hover {
+            color: #5aafff;
+        }
+        
+        .contact-note {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 2rem 4rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .footer-logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+        
+        .footer-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero, section {
+                padding: 6rem 2rem;
+            }
+            
+            .solution-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .solution-visual {
+                order: -1;
+                height: 300px;
+            }
+            
+            .founder-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .founder-image {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .stats-bar {
+                gap: 2rem;
+            }
+            
+            .pipeline::before {
+                display: none;
+            }
+            
+            footer {
+                padding: 2rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">ORBIT AXIOM SYSTEMS</div>
+        <ul class="nav-links">
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#solution">Orion Grid</a></li>
+            <li><a href="#technology">Technology</a></li>
+            <li><a href="#market">Market</a></li>
+            <li><a href="#founder">Founder</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-tag fade-in">Satellite Operations Infrastructure</p>
+            <h1 class="fade-in delay-1">Real-time drag forecasting through <span>direct atmospheric measurement</span></h1>
+            <p class="hero-description fade-in delay-2">Current satellite drag predictions rely on physics-based models with no direct sensing of the thermosphere. Orion Grid changes this with in-situ measurement from a dedicated sensor constellation.</p>
+            <div class="hero-cta fade-in delay-3">
+                <a href="#contact" class="btn btn-primary">Get in Touch</a>
+                <a href="#solution" class="btn btn-secondary">Learn More</a>
+            </div>
+            <div class="stats-bar fade-in delay-4">
+                <div class="stat">
+                    <span class="stat-value">$1T+</span>
+                    <span class="stat-label">Protected orbital assets</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">100k+</span>
+                    <span class="stat-label">Satellites at risk</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">$513M+</span>
+                    <span class="stat-label">Annual drag services market</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <span class="section-tag">The Problem</span>
+        <h2 class="section-title">Satellite operators are flying blind</h2>
+        <p class="section-description">Atmospheric drag is the dominant perturbation for low-Earth orbit satellites. Current prediction methods fail when operators need them most—during geomagnetic storms that can increase drag by 10x or more.</p>
+        
+        <div class="problem-grid">
+            <div class="problem-card">
+                <h3>Model Dependency</h3>
+                <p>Existing solutions rely entirely on empirical models (NRLMSISE, JB2008) that were calibrated on historical data. They cannot capture real-time thermospheric variability.</p>
+            </div>
+            <div class="problem-card">
+                <h3>No Direct Sensing</h3>
+                <p>There is no operational infrastructure measuring thermospheric density directly. Operators depend on predictions derived from solar and geomagnetic proxies—not actual conditions.</p>
+            </div>
+            <div class="problem-card">
+                <h3>Storm-Time Failures</h3>
+                <p>During geomagnetic storms—precisely when accurate predictions matter most—model errors can exceed 50%. This leads to emergency maneuvers, collision risk, and operational uncertainty.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+        <span class="section-tag">The Solution</span>
+        <h2 class="section-title">Orion Grid</h2>
+        <p class="section-description">A dedicated constellation providing real-time, in-situ atmospheric density measurements across low-Earth orbit. Direct sensing, not modeling.</p>
+        
+        <div class="solution-content">
+            <div class="solution-visual">
+                <div class="orbit-visualization">
+                    <div class="earth"></div>
+                    <div class="orbit-ring orbit-ring-1"></div>
+                    <div class="orbit-ring orbit-ring-2"></div>
+                    <div class="orbit-ring orbit-ring-3"></div>
+                    <div class="satellite satellite-1"></div>
+                    <div class="satellite satellite-2"></div>
+                    <div class="satellite satellite-3"></div>
+                </div>
+            </div>
+            <div class="solution-features">
+                <div class="feature">
+                    <h3>Direct Measurement</h3>
+                    <p>Purpose-built sensors measuring atmospheric density at orbital altitudes. No models, no proxies—actual thermospheric conditions in real-time.</p>
+                </div>
+                <div class="feature">
+                    <h3>Global Coverage</h3>
+                    <p>Distributed constellation architecture providing continuous coverage across all local times, latitudes, and altitudes relevant to satellite operations.</p>
+                </div>
+                <div class="feature">
+                    <h3>Storm Resilience</h3>
+                    <p>Measurement-based approach captures rapid density variations during geomagnetic storms, enabling accurate predictions precisely when they matter most.</p>
+                </div>
+                <div class="feature">
+                    <h3>Operational Integration</h3>
+                    <p>Data products designed for direct integration into satellite operations workflows, maneuver planning systems, and conjunction assessment processes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technology Section -->
+    <section class="technology" id="technology">
+        <span class="section-tag">Technology</span>
+        <h2 class="section-title">Sun-to-Thermosphere Pipeline</h2>
+        <p class="section-description">Our forecasting system tracks space weather from its solar origins through interplanetary space to its thermospheric effects—providing context and lead time for operational decisions.</p>
+        
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="pipeline-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </div>
+                <h4>Solar Surface</h4>
+                <span>Coronal holes, active regions</span>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 12 C4 12 8 4 12 12 C16 20 20 12 20 12" />
+                        <path d="M4 8 C4 8 8 0 12 8 C16 16 20 8 20 8" />
+                        <path d="M4 16 C4 16 8 8 12 16 C16 24 20 16 20 16" />
+                    </svg>
+                </div>
+                <h4>Solar Wind</h4>
+                <span>L1 monitoring, shock detection</span>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)" />
+                        <circle cx="12" cy="12" r="2" fill="currentColor" />
+                    </svg>
+                </div>
+                <h4>Magnetosphere</h4>
+                <span>Geomagnetic response</span>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="3" />
+                        <circle cx="12" cy="12" r="6" opacity="0.6" />
+                        <circle cx="12" cy="12" r="9" opacity="0.3" />
+                    </svg>
+                </div>
+                <h4>Thermosphere</h4>
+                <span>Density variations</span>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="8" height="8" rx="1" />
+                        <line x1="4" y1="12" x2="8" y2="12" />
+                        <line x1="16" y1="12" x2="20" y2="12" />
+                        <line x1="12" y1="4" x2="12" y2="8" />
+                        <line x1="12" y1="16" x2="12" y2="20" />
+                    </svg>
+                </div>
+                <h4>Drag Forecast</h4>
+                <span>Operational predictions</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Market Section -->
+    <section class="market" id="market">
+        <span class="section-tag">Market Opportunity</span>
+        <h2 class="section-title">A critical infrastructure gap</h2>
+        <p class="section-description">The space economy depends on accurate drag prediction. As orbital assets multiply, so does the cost of uncertainty.</p>
+        
+        <div class="market-grid">
+            <div class="market-card highlight">
+                <div class="market-value">$1T+</div>
+                <div class="market-label">Protected Orbital Assets</div>
+                <div class="market-detail">Satellites, space stations, and collision liability at stake</div>
+                <div class="market-source">McKinsey & Company, WEF 2024</div>
+            </div>
+            <div class="market-card">
+                <div class="market-value">$2.9B → $7B</div>
+                <div class="market-label">Combined TAM by 2032</div>
+                <div class="market-detail">Space weather ($1.2B → $2.8B) + SSA/Collision avoidance ($1.7B → $4.2B)</div>
+                <div class="market-source">DataIntelo</div>
+            </div>
+            <div class="market-card">
+                <div class="market-value">9.5%</div>
+                <div class="market-label">CAGR</div>
+                <div class="market-detail">Drag forecasting is the fastest-growing segment in space weather services</div>
+                <div class="market-source">Industry analysis</div>
+            </div>
+            <div class="market-card">
+                <div class="market-value">$513M+</div>
+                <div class="market-label">Annual Drag Services</div>
+                <div class="market-detail">Verified current spending on atmospheric drag prediction and analysis</div>
+                <div class="market-source">Primary research</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Founder Section -->
+    <section class="founder" id="founder">
+        <span class="section-tag">Founder</span>
+        <h2 class="section-title">Built by a domain expert</h2>
+        
+        <div class="founder-content">
+            <div class="founder-image">
+                <img src="me_with_charlie.jpg" alt="Fadil Inceoglu, PhD - Founder & CEO of Orbit Axiom Systems" />
+            </div>
+            <div class="founder-info">
+                <h3>Fadil Inceoglu, PhD</h3>
+                <p class="founder-title">Founder & CEO</p>
+                <p class="founder-bio">Space physicist at NCEI-NOAA/CIRES-University of Colorado Boulder with over a decade of experience in solar physics and space weather forecasting. Developer of operational algorithms for GOES satellites. Research spanning solar physics to galactic cosmic rays, solar wind dynamics, geomagnetic dynamics, and machine learning applications to space weather. Creator of coronal hole detection algorithms used by GFZ Potsdam for operational HSS forecasting.</p>
+                
+                <div class="founder-credentials">
+                    <span class="credential"><a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">25+ peer-reviewed publications</a></span>
+                    <span class="credential">$655K+ in NASA/NSF grants</span>
+                    <span class="credential">NOAA operational deployment</span>
+                    <span class="credential">GOES satellite algorithms</span>
+                    <span class="credential">GFZ Potsdam CH detection</span>
+                </div>
+                
+                <div class="founder-links">
+                    <a href="https://www.linkedin.com/in/fadil-inceoglu/" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/></svg>
+                        Google Scholar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="contact-content">
+            <span class="section-tag">Get in Touch</span>
+            <h2 class="section-title">Let's talk</h2>
+            <p class="section-description" style="margin: 0 auto;">Whether you're a satellite operator looking for better drag predictions or an investor interested in space infrastructure, we'd love to hear from you.</p>
+            
+            <a href="/cdn-cgi/l/email-protection#f29493969b9eb29d80909b86938a9b9d9f818b8186979f81dc919d9f" class="contact-email"><span class="__cf_email__" data-cfemail="a8cec9ccc1c4e8c7dacac1dcc9d0c1c7c5dbd1dbdccdc5db86cbc7c5">[email&#160;protected]</span></a>
+            
+            <p class="contact-note">Based in Miami, Florida</p>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">ORBIT AXIOM SYSTEMS</div>
+        <p class="footer-text">© 2025 Orbit Axiom Systems. All rights reserved.</p>
+    </footer>
+    
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all sections for scroll animations
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        
