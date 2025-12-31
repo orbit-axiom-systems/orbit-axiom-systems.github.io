@@ -680,7 +680,7 @@
                 <div class="panel-content">
                     <div class="sdo-content">
                         <div class="sdo-image-wrapper">
-                            <img id="sdoImage" src="data/sdo_dashboard.jpg" alt="SDO Solar Dashboard" 
+                            <img id="sdoImage" src="../data/sdo_dashboard.jpg" alt="SDO Solar Dashboard" 
                                  onerror="this.src='https://via.placeholder.com/800x400/1a1a24/606070?text=SDO+Image+Loading...'">
                         </div>
                         <div class="sdo-stats">
@@ -723,9 +723,9 @@
         // Configuration
         const CONFIG = {
             // Data from our own repo (updated by Cloud Functions)
-            sdoImageUrl: 'data/sdo_dashboard.jpg',
-            sdoMetadataUrl: 'data/sdo_metadata.json',
-            spaceWeatherUrl: 'data/space_weather.json',
+            sdoImageUrl: '../data/sdo_dashboard.jpg',
+            sdoMetadataUrl: '../data/sdo_metadata.json',
+            spaceWeatherUrl: '../data/space_weather.json',
             
             // NOAA SWPC direct endpoints for time series
             noaaPlasmaUrl: 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json',
