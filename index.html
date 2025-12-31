@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orbit Axiom Systems | Real-Time Satellite Drag Forecasting</title>
-    <meta name="description" content="Direct atmospheric measurement for satellite operations. Real-time drag forecasting through the Orion Grid constellation.">
+    <meta name="description" content="Direct atmospheric measurement for satellite operations. Real-time drag forecasting through the Atlas Grid constellation.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +64,11 @@
             font-weight: 700;
             letter-spacing: 0.15em;
             color: var(--text-primary);
+        }
+        
+        .logo img {
+            height: 28px;
+            width: auto;
         }
         
         .nav-links {
@@ -728,9 +733,13 @@
             nav {
                 padding: 1rem 2rem;
             }
+            
+            .logo img {
+                height: 20px;
+            }
 
             .hamburger {
-                display: flex; /* Show the button on mobile */
+                display: flex;
             }
             
             .nav-links {
@@ -751,11 +760,11 @@
             }
 
             .nav-links.active {
-                display: flex; /* Show menu when active */
+                display: flex;
             }
 
             .nav-links li a {
-                font-size: 1.5rem; /* Larger font for mobile */
+                font-size: 1.5rem;
             }
             
             .hero, section {
@@ -824,7 +833,7 @@
 <body>
     <nav>
         <a href="/" class="logo">
-            <img src="ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems" style="height: 28px; width: auto;">
+            <img src="ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems">
         </a>
         
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -835,7 +844,7 @@
 
         <ul class="nav-links" id="navLinks">
             <li><a href="#problem">Problem</a></li>
-            <li><a href="#solution">Orion Grid</a></li>
+            <li><a href="#solution">Atlas Grid</a></li>
             <li><a href="#technology">Technology</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
             <li><a href="#market">Market</a></li>
@@ -848,7 +857,7 @@
         <div class="hero-content">
             <p class="hero-tag fade-in">Satellite Operations Infrastructure</p>
             <h1 class="fade-in delay-1">Real-time drag forecasting through <span>direct atmospheric measurement</span></h1>
-            <p class="hero-description fade-in delay-2">Current satellite drag predictions rely on physics-based models with no direct sensing of the thermosphere. Orion Grid changes this with in-situ measurement from a dedicated sensor constellation.</p>
+            <p class="hero-description fade-in delay-2">Current satellite drag predictions rely on physics-based models with no direct sensing of the thermosphere. Atlas Grid changes this with in-situ measurement from a dedicated sensor constellation.</p>
             <div class="hero-cta fade-in delay-3">
                 <a href="#contact" class="btn btn-primary">Get in Touch</a>
                 <a href="#solution" class="btn btn-secondary">Learn More</a>
@@ -893,7 +902,7 @@
     
     <section class="solution" id="solution">
         <span class="section-tag">The Solution</span>
-        <h2 class="section-title">Orion Grid</h2>
+        <h2 class="section-title">Atlas Grid</h2>
         <p class="section-description">A dedicated constellation providing real-time, in-situ atmospheric density measurements across low-Earth orbit. Direct sensing, not modeling.</p>
         
         <div class="solution-content">
@@ -1097,7 +1106,7 @@
         <p class="footer-text">© 2025 Orbit Axiom Systems. All rights reserved.</p>
     </footer>
     
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // Smooth scroll for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -1135,7 +1144,7 @@
             observer.observe(section);
         });
 
-        // Toggle Mobile Menu (Logic added here)
+        // Toggle Mobile Menu
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
         
