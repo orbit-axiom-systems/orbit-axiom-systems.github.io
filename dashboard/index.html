@@ -482,14 +482,81 @@
             color: var(--warning);
         }
         
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 101;
+        }
+        
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
         /* Mobile */
         @media (max-width: 768px) {
             nav {
                 padding: 1rem 1.5rem;
             }
             
+            .hamburger {
+                display: flex;
+            }
+            
             .nav-links {
                 display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 0.5rem;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                padding: 0.75rem 0;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .nav-links li:last-child {
+                border-bottom: none;
+                padding-top: 1rem;
+            }
+            
+            .nav-links a {
+                font-size: 1rem;
             }
             
             .container {
@@ -526,7 +593,12 @@
     <!-- Navigation -->
     <nav>
         <a href="/" class="logo">ORBIT AXIOM SYSTEMS</a>
-        <ul class="nav-links">
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links" id="navLinks">
             <li><a href="/#problem">Problem</a></li>
             <li><a href="/#solution">Orion Grid</a></li>
             <li><a href="/#technology">Technology</a></li>
@@ -720,6 +792,23 @@
     </div>
 
     <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+        
         // Configuration
         const CONFIG = {
             // Data from our own repo (updated by Cloud Functions)
@@ -1219,7 +1308,7 @@
             
             const layout = {
                 ...darkLayout,
-                yaxis: { ...darkLayout.yaxis, title: { text: 'nT', font: { size: 10 } }, range: [0, 150] },
+                yaxis: { ...darkLayout.yaxis, title: { text: 'nT', font: { size: 10 } } },
                 height: 350,
             };
             
