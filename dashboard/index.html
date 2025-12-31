@@ -1042,9 +1042,7 @@
                     y: filtered.mag.map(d => d.bz),
                     type: 'scatter',
                     mode: 'lines',
-                    fill: 'tozeroy',
                     line: { color: '#00ff88', width: 1.5 },
-                    fillcolor: 'rgba(0, 255, 136, 0.15)',
                     yaxis: 'y3',
                 },
                 {
@@ -1061,11 +1059,54 @@
             const layout = {
                 ...darkLayout,
                 grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
-                yaxis: { ...darkLayout.yaxis, title: { text: 'km/s', font: { size: 10 } }, domain: [0.72, 1], range: [250, 800] },
-                yaxis2: { ...darkLayout.yaxis, title: { text: 'p/cm³', font: { size: 10 } }, domain: [0.38, 0.66], range: [0, 30] },
-                yaxis3: { ...darkLayout.yaxis, title: { text: 'nT', font: { size: 10 } }, domain: [0, 0.32], range: [-20, 25] },
+                xaxis: { 
+                    ...darkLayout.xaxis, 
+                    showticklabels: false,  // Hide time labels on top panel
+                    domain: [0, 1],
+                    anchor: 'y',
+                },
+                xaxis2: { 
+                    ...darkLayout.xaxis, 
+                    showticklabels: false,  // Hide time labels on middle panel
+                    domain: [0, 1],
+                    anchor: 'y2',
+                },
+                xaxis3: { 
+                    ...darkLayout.xaxis, 
+                    showticklabels: true,   // Show time labels only on bottom panel
+                    tickformat: '%m/%d %H:%M',
+                    domain: [0, 1],
+                    anchor: 'y3',
+                },
+                yaxis: { 
+                    ...darkLayout.yaxis, 
+                    title: { text: 'km/s', font: { size: 10 } }, 
+                    domain: [0.72, 1], 
+                    range: [250, 800],
+                    anchor: 'x',
+                },
+                yaxis2: { 
+                    ...darkLayout.yaxis, 
+                    title: { text: 'p/cm³', font: { size: 10 } }, 
+                    domain: [0.38, 0.66], 
+                    range: [0, 30],
+                    anchor: 'x2',
+                },
+                yaxis3: { 
+                    ...darkLayout.yaxis, 
+                    title: { text: 'nT', font: { size: 10 } }, 
+                    domain: [0, 0.32], 
+                    range: [-20, 25],
+                    anchor: 'x3',
+                },
                 height: 350,
             };
+            
+            // Update traces to use correct x-axes
+            traces[0].xaxis = 'x';
+            traces[1].xaxis = 'x2';
+            traces[2].xaxis = 'x3';
+            traces[3].xaxis = 'x3';
             
             Plotly.newPlot('l1Chart', traces, layout, plotConfig);
         }
@@ -1077,14 +1118,16 @@
             if (filteredPrimary.length === 0 && filteredSecondary.length === 0) return;
             
             const traces = [];
+            
+            // Color scheme: Primary = brighter, Secondary = dimmer/different hue
             const colors = {
-                Hp: { primary: '#ff69b4', secondary: '#ff69b4' },
-                He: { primary: '#87ceeb', secondary: '#87ceeb' },
-                Hn: { primary: '#98fb98', secondary: '#98fb98' },
-                total: { primary: '#ffd700', secondary: '#ffd700' },
+                Hp: { primary: '#ff69b4', secondary: '#b4467d' },      // Hot pink / Muted pink
+                He: { primary: '#87ceeb', secondary: '#5a8fa3' },      // Sky blue / Muted blue
+                Hn: { primary: '#98fb98', secondary: '#6ab06a' },      // Pale green / Muted green
+                total: { primary: '#ffd700', secondary: '#b39700' },   // Gold / Darker gold
             };
             
-            // Primary satellite traces
+            // Primary satellite traces (solid, brighter)
             if (showComponents.Hp && filteredPrimary.length > 0) {
                 traces.push({
                     name: `G${goesUrls.primarySat} Hp`,
@@ -1093,8 +1136,6 @@
                     type: 'scatter',
                     mode: 'lines',
                     line: { color: colors.Hp.primary, width: 2 },
-                    fill: 'tozeroy',
-                    fillcolor: 'rgba(255, 105, 180, 0.15)',
                 });
             }
             
@@ -1105,7 +1146,7 @@
                     y: filteredPrimary.map(d => d.He),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.He.primary, width: 1.5 },
+                    line: { color: colors.He.primary, width: 2 },
                 });
             }
             
@@ -1116,7 +1157,7 @@
                     y: filteredPrimary.map(d => d.Hn),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.Hn.primary, width: 1.5 },
+                    line: { color: colors.Hn.primary, width: 2 },
                 });
             }
             
@@ -1127,11 +1168,11 @@
                     y: filteredPrimary.map(d => d.total),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.total.primary, width: 1.5 },
+                    line: { color: colors.total.primary, width: 2 },
                 });
             }
             
-            // Secondary satellite traces (dashed lines)
+            // Secondary satellite traces (different color, same line style)
             if (showComponents.Hp && filteredSecondary.length > 0) {
                 traces.push({
                     name: `G${goesUrls.secondarySat} Hp`,
@@ -1139,7 +1180,7 @@
                     y: filteredSecondary.map(d => d.Hp),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.Hp.secondary, width: 1.5, dash: 'dot' },
+                    line: { color: colors.Hp.secondary, width: 1.5 },
                 });
             }
             
@@ -1150,7 +1191,7 @@
                     y: filteredSecondary.map(d => d.He),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.He.secondary, width: 1.5, dash: 'dot' },
+                    line: { color: colors.He.secondary, width: 1.5 },
                 });
             }
             
@@ -1161,7 +1202,7 @@
                     y: filteredSecondary.map(d => d.Hn),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.Hn.secondary, width: 1.5, dash: 'dot' },
+                    line: { color: colors.Hn.secondary, width: 1.5 },
                 });
             }
             
@@ -1172,7 +1213,7 @@
                     y: filteredSecondary.map(d => d.total),
                     type: 'scatter',
                     mode: 'lines',
-                    line: { color: colors.total.secondary, width: 1.5, dash: 'dot' },
+                    line: { color: colors.total.secondary, width: 1.5 },
                 });
             }
             
