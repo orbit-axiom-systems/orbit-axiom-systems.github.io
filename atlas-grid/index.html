@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Grid - Constellation Visualization | Orbit Axiom Systems</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent: #4a9eff;
+            --accent-dim: #2a5a9a;
+            --accent-glow: rgba(74, 158, 255, 0.3);
+            --border: #2a2a35;
+            --physicist-color: #00d4aa;
+            --surveyor-color: #ff9f43;
+            --shell-a: rgba(255, 107, 107, 0.15);
+            --shell-b: rgba(255, 204, 0, 0.12);
+            --shell-c: rgba(74, 158, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Instrument Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .atlas-section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .atlas-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 100% 60% at 50% 100%, rgba(74, 158, 255, 0.05), transparent),
+                radial-gradient(ellipse 50% 30% at 20% 20%, rgba(0, 212, 170, 0.03), transparent),
+                radial-gradient(ellipse 50% 30% at 80% 80%, rgba(255, 159, 67, 0.03), transparent);
+            pointer-events: none;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Three Panel Layout */
+        .constellation-dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: 600px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (max-width: 1200px) {
+            .constellation-dashboard {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .satellite-panel {
+                max-width: 400px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            
+            .constellation-main {
+                order: -1;
+                height: 500px;
+            }
+        }
+        
+        /* Satellite Panels (Left & Right) */
+        .satellite-panel {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .satellite-panel.physicist {
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+        
+        .satellite-panel.surveyor {
+            border-color: rgba(255, 159, 67, 0.3);
+        }
+        
+        .panel-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .panel-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .physicist .panel-badge {
+            background: rgba(0, 212, 170, 0.15);
+            color: var(--physicist-color);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+        }
+        
+        .surveyor .panel-badge {
+            background: rgba(255, 159, 67, 0.15);
+            color: var(--surveyor-color);
+            border: 1px solid rgba(255, 159, 67, 0.3);
+        }
+        
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .panel-form-factor {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .satellite-viewport {
+            flex: 1;
+            min-height: 250px;
+            position: relative;
+            cursor: grab;
+        }
+        
+        .satellite-viewport:active {
+            cursor: grabbing;
+        }
+        
+        .satellite-viewport canvas {
+            display: block;
+        }
+        
+        .panel-info {
+            padding: 1.25rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .capability-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        .capability-tag {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .physicist .capability-tag {
+            border-color: rgba(0, 212, 170, 0.2);
+        }
+        
+        .surveyor .capability-tag {
+            border-color: rgba(255, 159, 67, 0.2);
+        }
+        
+        .panel-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .physicist .stat-value {
+            color: var(--physicist-color);
+        }
+        
+        .surveyor .stat-value {
+            color: var(--surveyor-color);
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        /* Main Constellation View */
+        .constellation-main {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            min-height: 600px;
+        }
+        
+        .constellation-viewport {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .constellation-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
+            pointer-events: none;
+        }
+        
+        .overlay-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .overlay-stat {
+            text-align: center;
+        }
+        
+        .overlay-stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .overlay-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Legend */
+        .constellation-legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            pointer-events: auto;
+        }
+        
+        .legend-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.physicist { background: var(--physicist-color); box-shadow: 0 0 8px var(--physicist-color); }
+        .legend-dot.surveyor { background: var(--surveyor-color); box-shadow: 0 0 8px var(--surveyor-color); }
+        .legend-dot.shell-a { background: #ff6b6b; opacity: 0.7; }
+        .legend-dot.shell-b { background: #ffcc00; opacity: 0.7; }
+        .legend-dot.shell-c { background: #4a9eff; opacity: 0.7; }
+        
+        .legend-line {
+            width: 16px;
+            height: 2px;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+        
+        /* Controls hint */
+        .controls-hint {
+            position: absolute;
+            bottom: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(10, 10, 15, 0.6);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        /* Loading state */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Pulse animation for satellites */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <section class="atlas-section" id="atlas-grid">
+        <div class="section-header">
+            <span class="section-tag">The Constellation</span>
+            <h2 class="section-title">Atlas Grid Architecture</h2>
+            <p class="section-subtitle">30 satellites across 3 altitude shells and 4 orbital planes. Direct measurement infrastructure for global thermospheric density.</p>
+        </div>
+        
+        <div class="constellation-dashboard">
+            <!-- Left Panel: The Physicist (6U) -->
+            <div class="satellite-panel physicist">
+                <div class="panel-header">
+                    <span class="panel-badge">6U Cubesat</span>
+                    <h3 class="panel-title">The Physicist</h3>
+                    <span class="panel-form-factor">Anchor Class</span>
+                </div>
+                <div class="satellite-viewport" id="physicist-viewport">
+                    <div class="loading-indicator" id="physicist-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Initializing...</span>
+                    </div>
+                </div>
+                <div class="panel-info">
+                    <div class="info-label">Measures</div>
+                    <div class="capability-list">
+                        <span class="capability-tag">Composition</span>
+                        <span class="capability-tag">Temperature</span>
+                        <span class="capability-tag">EUV Flux</span>
+                        <span class="capability-tag">Precipitation</span>
+                        <span class="capability-tag">Direct Drag</span>
+                        <span class="capability-tag">B-Field</span>
+                    </div>
+                    <div class="panel-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Satellites</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12kg</div>
+                            <div class="stat-label">Mass</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Center: Full Constellation -->
+            <div class="constellation-main">
+                <div class="constellation-viewport" id="constellation-viewport">
+                    <div class="loading-indicator" id="constellation-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading constellation...</span>
+                    </div>
+                </div>
+                
+                <div class="constellation-legend">
+                    <div class="legend-title">Legend</div>
+                    <div class="legend-item"><span class="legend-dot physicist"></span> Physicist (6U)</div>
+                    <div class="legend-item"><span class="legend-dot surveyor"></span> Surveyor (3U)</div>
+                    <div class="legend-item"><span class="legend-dot shell-a"></span> Shell A: 350 km</div>
+                    <div class="legend-item"><span class="legend-dot shell-b"></span> Shell B: 450 km</div>
+                    <div class="legend-item"><span class="legend-dot shell-c"></span> Shell C: 550 km</div>
+                    <div class="legend-item"><span class="legend-line"></span> Orbital Plane</div>
+                </div>
+                
+                <div class="controls-hint">Drag to rotate • Scroll to zoom</div>
+                
+                <div class="constellation-overlay">
+                    <div class="overlay-stats">
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">30</div>
+                            <div class="overlay-stat-label">Total Satellites</div>
+                        </div>
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">4</div>
+                            <div class="overlay-stat-label">Orbital Planes</div>
+                        </div>
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">3</div>
+                            <div class="overlay-stat-label">Altitude Shells</div>
+                        </div>
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">24/7</div>
+                            <div class="overlay-stat-label">Global Coverage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel: The Surveyor (3U) -->
+            <div class="satellite-panel surveyor">
+                <div class="panel-header">
+                    <span class="panel-badge">3U Cubesat</span>
+                    <h3 class="panel-title">The Surveyor</h3>
+                    <span class="panel-form-factor">Drag Chip Class</span>
+                </div>
+                <div class="satellite-viewport" id="surveyor-viewport">
+                    <div class="loading-indicator" id="surveyor-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Initializing...</span>
+                    </div>
+                </div>
+                <div class="panel-info">
+                    <div class="info-label">Measures</div>
+                    <div class="capability-list">
+                        <span class="capability-tag">Drag Acceleration</span>
+                        <span class="capability-tag">Density Gradients</span>
+                        <span class="capability-tag">Position (POD)</span>
+                    </div>
+                    <div class="panel-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Satellites</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5kg</div>
+                            <div class="stat-label">Mass</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ============================================
+        // ATLAS GRID CONSTELLATION VISUALIZATION
+        // ============================================
+        
+        // Configuration
+        const CONFIG = {
+            earthRadius: 6371, // km
+            shells: {
+                A: { altitude: 350, color: 0xff6b6b, opacity: 0.08 },
+                B: { altitude: 450, color: 0xffcc00, opacity: 0.06 },
+                C: { altitude: 550, color: 0x4a9eff, opacity: 0.05 }
+            },
+            planes: [
+                { raan: 0, inclination: 97.6 },    // SSO
+                { raan: 90, inclination: 97.6 },   // SSO
+                { raan: 180, inclination: 92 },    // High-inc non-SSO
+                { raan: 270, inclination: 65 }     // Mid-inc
+            ],
+            physicistColor: 0x00d4aa,
+            surveyorColor: 0xff9f43,
+            orbitSpeed: 0.02,
+            scale: 0.001 // Scale factor for rendering
+        };
+        
+        // Utility: Degrees to Radians
+        const deg2rad = (deg) => deg * Math.PI / 180;
+        
+        // ============================================
+        // MAIN CONSTELLATION VIEW
+        // ============================================
+        function initConstellationView() {
+            const container = document.getElementById('constellation-viewport');
+            const loading = document.getElementById('constellation-loading');
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // Scene
+            const scene = new THREE.Scene();
+            
+            // Camera
+            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(15, 8, 15);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.5);
+            scene.add(ambientLight);
+            
+            const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            sunLight.position.set(50, 30, 50);
+            scene.add(sunLight);
+            
+            const fillLight = new THREE.DirectionalLight(0x4a9eff, 0.3);
+            fillLight.position.set(-30, -10, -30);
+            scene.add(fillLight);
+            
+            // Earth
+            const earthGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale, 64, 64);
+            const earthMaterial = new THREE.MeshPhongMaterial({
+                color: 0x1a4a7a,
+                emissive: 0x0a1a2a,
+                emissiveIntensity: 0.3,
+                shininess: 15
+            });
+            const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            scene.add(earth);
+            
+            // Earth glow
+            const glowGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.02, 64, 64);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4a9eff,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.BackSide
+            });
+            const earthGlow = new THREE.Mesh(glowGeometry, glowMaterial);
+            scene.add(earthGlow);
+            
+            // Atmosphere edge
+            const atmosphereGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.08, 64, 64);
+            const atmosphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x88ccff,
+                transparent: true,
+                opacity: 0.05,
+                side: THREE.BackSide
+            });
+            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+            scene.add(atmosphere);
+            
+            // Altitude shells (as rings/tori for visualization)
+            Object.entries(CONFIG.shells).forEach(([name, shell]) => {
+                const shellRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
+                const shellGeometry = new THREE.TorusGeometry(shellRadius, 0.02, 16, 100);
+                const shellMaterial = new THREE.MeshBasicMaterial({
+                    color: shell.color,
+                    transparent: true,
+                    opacity: shell.opacity * 3
+                });
+                
+                // Create multiple rings at different angles to suggest a shell
+                for (let i = 0; i < 3; i++) {
+                    const ring = new THREE.Mesh(shellGeometry, shellMaterial);
+                    ring.rotation.x = Math.PI / 2 + (i - 1) * 0.3;
+                    ring.rotation.z = i * 0.5;
+                    scene.add(ring);
+                }
+            });
+            
+            // Orbital planes visualization
+            CONFIG.planes.forEach((plane, planeIndex) => {
+                const planeGroup = new THREE.Group();
+                
+                // Rotate group for RAAN and inclination
+                planeGroup.rotation.y = deg2rad(plane.raan);
+                planeGroup.rotation.x = deg2rad(90 - plane.inclination);
+                
+                // Orbital path ring for each shell
+                Object.entries(CONFIG.shells).forEach(([shellName, shell]) => {
+                    const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
+                    const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.01, orbitRadius + 0.01, 128);
+                    const orbitMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x4a9eff,
+                        transparent: true,
+                        opacity: 0.15,
+                        side: THREE.DoubleSide
+                    });
+                    const orbitRing = new THREE.Mesh(orbitGeometry, orbitMaterial);
+                    orbitRing.rotation.x = Math.PI / 2;
+                    planeGroup.add(orbitRing);
+                });
+                
+                scene.add(planeGroup);
+            });
+            
+            // Satellites
+            const satellites = [];
+            
+            // Create satellite geometry
+            function createSatellite(isPhysicist) {
+                const group = new THREE.Group();
+                
+                if (isPhysicist) {
+                    // 6U - larger, more complex
+                    const bodyGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.1);
+                    const bodyMaterial = new THREE.MeshPhongMaterial({
+                        color: 0x333344,
+                        emissive: CONFIG.physicistColor,
+                        emissiveIntensity: 0.3
+                    });
+                    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                    group.add(body);
+                    
+                    // Solar panels
+                    const panelGeometry = new THREE.BoxGeometry(0.3, 0.15, 0.01);
+                    const panelMaterial = new THREE.MeshPhongMaterial({
+                        color: 0x1a3366,
+                        emissive: 0x0a1a33,
+                        emissiveIntensity: 0.2
+                    });
+                    const leftPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    leftPanel.position.set(-0.22, 0, 0);
+                    group.add(leftPanel);
+                    
+                    const rightPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    rightPanel.position.set(0.22, 0, 0);
+                    group.add(rightPanel);
+                    
+                    // Magnetometer boom
+                    const boomGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 8);
+                    const boomMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+                    const boom = new THREE.Mesh(boomGeometry, boomMaterial);
+                    boom.position.set(0, 0.22, 0);
+                    group.add(boom);
+                    
+                    // Glow sphere
+                    const glowGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: CONFIG.physicistColor,
+                        transparent: true,
+                        opacity: 0.4
+                    });
+                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                    group.add(glow);
+                    
+                } else {
+                    // 3U - dart-shaped, simpler
+                    const bodyGeometry = new THREE.BoxGeometry(0.08, 0.2, 0.08);
+                    const bodyMaterial = new THREE.MeshPhongMaterial({
+                        color: 0x333344,
+                        emissive: CONFIG.surveyorColor,
+                        emissiveIntensity: 0.3
+                    });
+                    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                    group.add(body);
+                    
+                    // Small panels
+                    const panelGeometry = new THREE.BoxGeometry(0.12, 0.08, 0.005);
+                    const panelMaterial = new THREE.MeshPhongMaterial({
+                        color: 0x1a3366,
+                        emissive: 0x0a1a33,
+                        emissiveIntensity: 0.2
+                    });
+                    const leftPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    leftPanel.position.set(-0.1, 0, 0);
+                    group.add(leftPanel);
+                    
+                    const rightPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    rightPanel.position.set(0.1, 0, 0);
+                    group.add(rightPanel);
+                    
+                    // Glow sphere
+                    const glowGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: CONFIG.surveyorColor,
+                        transparent: true,
+                        opacity: 0.4
+                    });
+                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                    group.add(glow);
+                }
+                
+                return group;
+            }
+            
+            // Distribute satellites across planes and shells
+            // 6 Physicists: 1-2 per plane in B/C shells
+            // 24 Surveyors: 6 per plane across all shells
+            
+            CONFIG.planes.forEach((plane, planeIndex) => {
+                const planeGroup = new THREE.Group();
+                planeGroup.rotation.y = deg2rad(plane.raan);
+                planeGroup.rotation.x = deg2rad(90 - plane.inclination);
+                
+                // Physicist satellites (1-2 per plane, B/C shells only)
+                const physicistShells = ['B', 'C'];
+                physicistShells.forEach((shellName, shellIdx) => {
+                    if (planeIndex < 3 || shellIdx === 0) { // 6 total: 2 in planes 0-2, 1 in plane 3
+                        const shell = CONFIG.shells[shellName];
+                        const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
+                        const angle = (planeIndex * 90 + shellIdx * 45 + 15) * Math.PI / 180;
+                        
+                        const sat = createSatellite(true);
+                        sat.userData = {
+                            orbitRadius,
+                            angle,
+                            speed: CONFIG.orbitSpeed * (1 + Math.random() * 0.1),
+                            isPhysicist: true
+                        };
+                        
+                        satellites.push({ mesh: sat, planeGroup });
+                        planeGroup.add(sat);
+                    }
+                });
+                
+                // Surveyor satellites (6 per plane, distributed across shells)
+                const shellNames = ['A', 'B', 'C'];
+                for (let i = 0; i < 6; i++) {
+                    const shellName = shellNames[i % 3];
+                    const shell = CONFIG.shells[shellName];
+                    const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
+                    const angle = (i * 60 + planeIndex * 15) * Math.PI / 180;
+                    
+                    const sat = createSatellite(false);
+                    sat.userData = {
+                        orbitRadius,
+                        angle,
+                        speed: CONFIG.orbitSpeed * (0.9 + Math.random() * 0.2),
+                        isPhysicist: false
+                    };
+                    
+                    satellites.push({ mesh: sat, planeGroup });
+                    planeGroup.add(sat);
+                }
+                
+                scene.add(planeGroup);
+            });
+            
+            // Mouse controls for orbit
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let cameraAngle = { theta: 0.8, phi: 0.5 };
+            let cameraDistance = 25;
+            
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                cameraAngle.theta -= deltaX * 0.005;
+                cameraAngle.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraAngle.phi - deltaY * 0.005));
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            container.addEventListener('mouseup', () => isDragging = false);
+            container.addEventListener('mouseleave', () => isDragging = false);
+            
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                cameraDistance = Math.max(12, Math.min(50, cameraDistance + e.deltaY * 0.02));
+            });
+            
+            // Touch controls
+            let touchStart = null;
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (!touchStart || e.touches.length !== 1) return;
+                e.preventDefault();
+                
+                const deltaX = e.touches[0].clientX - touchStart.x;
+                const deltaY = e.touches[0].clientY - touchStart.y;
+                
+                cameraAngle.theta -= deltaX * 0.005;
+                cameraAngle.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraAngle.phi - deltaY * 0.005));
+                
+                touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            });
+            
+            container.addEventListener('touchend', () => touchStart = null);
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Update camera position
+                camera.position.x = cameraDistance * Math.sin(cameraAngle.phi) * Math.cos(cameraAngle.theta);
+                camera.position.y = cameraDistance * Math.cos(cameraAngle.phi);
+                camera.position.z = cameraDistance * Math.sin(cameraAngle.phi) * Math.sin(cameraAngle.theta);
+                camera.lookAt(0, 0, 0);
+                
+                // Rotate Earth slowly
+                earth.rotation.y += 0.001;
+                earthGlow.rotation.y += 0.001;
+                
+                // Update satellite positions
+                satellites.forEach(({ mesh }) => {
+                    mesh.userData.angle += mesh.userData.speed * 0.01;
+                    const r = mesh.userData.orbitRadius;
+                    mesh.position.x = r * Math.cos(mesh.userData.angle);
+                    mesh.position.z = r * Math.sin(mesh.userData.angle);
+                    
+                    // Point satellite in velocity direction
+                    mesh.rotation.y = -mesh.userData.angle + Math.PI / 2;
+                });
+                
+                renderer.render(scene, camera);
+            }
+            
+            // Handle resize
+            window.addEventListener('resize', () => {
+                const newWidth = container.clientWidth;
+                const newHeight = container.clientHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            });
+            
+            loading.style.display = 'none';
+            animate();
+        }
+        
+        // ============================================
+        // SATELLITE PANEL VIEWS
+        // ============================================
+        function initSatelliteView(containerId, isPhysicist) {
+            const container = document.getElementById(containerId);
+            const loadingId = containerId.replace('-viewport', '-loading');
+            const loading = document.getElementById(loadingId);
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+            camera.position.set(0, 0, isPhysicist ? 4 : 3);
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+            scene.add(ambientLight);
+            
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1);
+            keyLight.position.set(5, 5, 5);
+            scene.add(keyLight);
+            
+            const fillLight = new THREE.DirectionalLight(isPhysicist ? 0x00d4aa : 0xff9f43, 0.4);
+            fillLight.position.set(-3, 0, 3);
+            scene.add(fillLight);
+            
+            const rimLight = new THREE.DirectionalLight(0x4a9eff, 0.3);
+            rimLight.position.set(0, -3, -3);
+            scene.add(rimLight);
+            
+            // Satellite group
+            const satelliteGroup = new THREE.Group();
+            
+            if (isPhysicist) {
+                // 6U Cubesat - The Physicist
+                // Main body (6U = 10x20x30 cm, scaled up for visibility)
+                const bodyGeometry = new THREE.BoxGeometry(0.8, 1.6, 0.5);
+                const bodyMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x2a2a3a,
+                    specular: 0x444444,
+                    shininess: 30
+                });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                satelliteGroup.add(body);
+                
+                // Gold foil accents
+                const foilGeometry = new THREE.BoxGeometry(0.75, 0.3, 0.52);
+                const foilMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xd4af37,
+                    specular: 0xffffff,
+                    shininess: 80
+                });
+                const foil1 = new THREE.Mesh(foilGeometry, foilMaterial);
+                foil1.position.y = 0.5;
+                satelliteGroup.add(foil1);
+                
+                const foil2 = new THREE.Mesh(foilGeometry, foilMaterial);
+                foil2.position.y = -0.5;
+                satelliteGroup.add(foil2);
+                
+                // Solar panels (deployable)
+                const panelGeometry = new THREE.BoxGeometry(1.5, 1.2, 0.03);
+                const panelMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x1a2a5a,
+                    specular: 0x3a4a7a,
+                    shininess: 50
+                });
+                
+                // Panel cells texture effect
+                const cellGeometry = new THREE.BoxGeometry(0.18, 0.18, 0.035);
+                const cellMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x0a1a3a,
+                    specular: 0x2a3a5a,
+                    shininess: 60
+                });
+                
+                [-1, 1].forEach(side => {
+                    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    panel.position.x = side * 1.15;
+                    panel.position.y = 0;
+                    satelliteGroup.add(panel);
+                    
+                    // Add cell grid
+                    for (let row = -2; row <= 2; row++) {
+                        for (let col = -3; col <= 3; col++) {
+                            const cell = new THREE.Mesh(cellGeometry, cellMaterial);
+                            cell.position.x = side * 1.15 + col * 0.2;
+                            cell.position.y = row * 0.2;
+                            cell.position.z = 0.02;
+                            satelliteGroup.add(cell);
+                        }
+                    }
+                });
+                
+                // Magnetometer boom
+                const boomGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1.2, 8);
+                const boomMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
+                const boom = new THREE.Mesh(boomGeometry, boomMaterial);
+                boom.position.y = 1.4;
+                satelliteGroup.add(boom);
+                
+                // Magnetometer sensor head
+                const sensorGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                const sensorMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xcccccc,
+                    specular: 0xffffff,
+                    shininess: 100
+                });
+                const sensor = new THREE.Mesh(sensorGeometry, sensorMaterial);
+                sensor.position.y = 2;
+                satelliteGroup.add(sensor);
+                
+                // INMS Ram inlet (front)
+                const inletGeometry = new THREE.CylinderGeometry(0.12, 0.15, 0.1, 16);
+                const inletMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x444455,
+                    specular: 0x666677,
+                    shininess: 50
+                });
+                const inlet = new THREE.Mesh(inletGeometry, inletMaterial);
+                inlet.rotation.x = Math.PI / 2;
+                inlet.position.z = 0.3;
+                inlet.position.y = 0.3;
+                satelliteGroup.add(inlet);
+                
+                // Antennas
+                const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.4, 6);
+                const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+                
+                const antenna1 = new THREE.Mesh(antennaGeometry, antennaMaterial);
+                antenna1.position.set(0.3, -0.9, 0.2);
+                antenna1.rotation.x = 0.3;
+                satelliteGroup.add(antenna1);
+                
+                const antenna2 = new THREE.Mesh(antennaGeometry, antennaMaterial);
+                antenna2.position.set(-0.3, -0.9, 0.2);
+                antenna2.rotation.x = 0.3;
+                satelliteGroup.add(antenna2);
+                
+            } else {
+                // 3U Cubesat - The Surveyor (dart-shaped)
+                // Main body (3U = 10x10x30 cm)
+                const bodyGeometry = new THREE.BoxGeometry(0.5, 1.4, 0.5);
+                const bodyMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x2a2a3a,
+                    specular: 0x444444,
+                    shininess: 30
+                });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                satelliteGroup.add(body);
+                
+                // Gold foil band
+                const foilGeometry = new THREE.BoxGeometry(0.52, 0.25, 0.52);
+                const foilMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xd4af37,
+                    specular: 0xffffff,
+                    shininess: 80
+                });
+                const foil = new THREE.Mesh(foilGeometry, foilMaterial);
+                foil.position.y = 0.3;
+                satelliteGroup.add(foil);
+                
+                // Smaller deployable panels
+                const panelGeometry = new THREE.BoxGeometry(0.8, 0.6, 0.02);
+                const panelMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x1a2a5a,
+                    specular: 0x3a4a7a,
+                    shininess: 50
+                });
+                
+                [-1, 1].forEach(side => {
+                    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    panel.position.x = side * 0.65;
+                    panel.position.y = 0;
+                    satelliteGroup.add(panel);
+                });
+                
+                // Nose cone (aerodynamic)
+                const coneGeometry = new THREE.ConeGeometry(0.25, 0.4, 4);
+                const coneMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x3a3a4a,
+                    specular: 0x555566,
+                    shininess: 40
+                });
+                const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+                cone.position.y = 0.9;
+                cone.rotation.y = Math.PI / 4;
+                satelliteGroup.add(cone);
+                
+                // Simple antenna
+                const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.3, 6);
+                const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+                const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
+                antenna.position.y = -0.85;
+                satelliteGroup.add(antenna);
+            }
+            
+            scene.add(satelliteGroup);
+            
+            // Subtle grid floor
+            const gridHelper = new THREE.GridHelper(4, 10, 0x222233, 0x111122);
+            gridHelper.position.y = -1.5;
+            gridHelper.material.opacity = 0.3;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Slow rotation around Y axis
+                satelliteGroup.rotation.y += 0.005;
+                
+                // Gentle wobble
+                satelliteGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                
+                renderer.render(scene, camera);
+            }
+            
+            // Handle resize
+            const resizeObserver = new ResizeObserver(() => {
+                const newWidth = container.clientWidth;
+                const newHeight = container.clientHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            });
+            resizeObserver.observe(container);
+            
+            if (loading) loading.style.display = 'none';
+            animate();
+        }
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure containers are sized
+            setTimeout(() => {
+                initConstellationView();
+                initSatelliteView('physicist-viewport', true);
+                initSatelliteView('surveyor-viewport', false);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
