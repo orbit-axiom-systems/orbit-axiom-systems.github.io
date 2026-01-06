@@ -364,7 +364,6 @@
             position: relative;
             width: 320px;
             height: 320px;
-            /* Create a 3D space */
             transform-style: preserve-3d;
             perspective: 1200px; 
             display: flex;
@@ -372,27 +371,25 @@
             justify-content: center;
         }
         
-        /* The Realistic Earth */
+        /* The Realistic Earth - Larger (110px) and Centered */
         .earth {
             position: absolute;
             top: 50%;
             left: 50%;
-            /* Fixed dimensions */
-            width: 100px;
-            height: 100px;
-            /* Precise centering */
-            margin-top: -50px;
-            margin-left: -50px;
+            width: 110px;  /* Larger size */
+            height: 110px;
+            margin-top: -55px;  /* Exact center offset */
+            margin-left: -55px; /* Exact center offset */
             
             border-radius: 50%;
-            /* Using a map texture from Three.js examples (public domain). */
+            /* Using a map texture */
             background: url('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg') repeat-x;
-            background-size: 200% 100%; /* Double width for looping */
+            background-size: 200% 100%; 
             z-index: 10;
             animation: earth-spin 30s linear infinite;
-            /* Stronger Inner shadow to mask poles and look spherical */
-            box-shadow: inset 16px 0 40px 6px rgba(0,0,0,0.9), 
-                        inset -2px 0 5px 2px rgba(255, 255, 255, 0.15);
+            /* Stronger Inner shadow to mask poles */
+            box-shadow: inset 20px 0 45px 6px rgba(0,0,0,0.9), 
+                        inset -2px 0 8px 2px rgba(255, 255, 255, 0.15);
         }
 
         @keyframes earth-spin {
@@ -405,53 +402,51 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 130px;
-            height: 130px;
-            margin-top: -65px;
-            margin-left: -65px;
+            width: 140px;
+            height: 140px;
+            margin-top: -70px;
+            margin-left: -70px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(74, 158, 255, 0.2) 0%, transparent 60%);
             z-index: 1;
         }
         
-        /* Constellation Rings - TIGHTENED ORBITS */
-        /* Changed width from 260px to 150px for LEO look */
+        /* Constellation Rings - TIGHT LEO (150px) */
         .orbit-ring {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 150px;
+            width: 150px;  /* Much tighter orbit */
             height: 150px;
-            /* Half of width/height to center perfectly */
-            margin-top: -95px; 
-            margin-left: -95px;
+            margin-top: -75px; /* Exact center offset */
+            margin-left: -75px; /* Exact center offset */
             
             border: 1px solid rgba(74, 158, 255, 0.15);
             border-radius: 50%;
             transform-style: preserve-3d;
         }
         
-        /* 4 Planes - Staggered angles for Coverage Net look */
+        /* 4 Planes */
         .ring-1 { transform: rotateY(70deg) rotateX(45deg); }
         .ring-2 { transform: rotateY(70deg) rotateX(-45deg); }
         .ring-3 { transform: rotateY(70deg) rotateX(15deg); }
         .ring-4 { transform: rotateY(70deg) rotateX(-15deg); }
         
-        /* Satellites - Tiny panels */
+        /* Satellites */
         .satellite {
             position: absolute;
             top: 0;
             left: 50%;
             width: 6px;
-            height: 8px; /* Rectangular panel shape */
+            height: 8px; 
             background: #a0cfff;
             box-shadow: 0 0 6px rgba(160, 207, 255, 0.8);
-            /* Transform origin matches orbit radius (half of ring width: 95px) */
-            transform-origin: 0 95px; 
-            margin-left: -3px; /* Center alignment */
+            /* Transform origin matches orbit radius (half of ring width: 75px) */
+            transform-origin: 0 75px; 
+            margin-left: -3px; 
         }
         
-        /* Animations for satellites - Staggered */
+        /* Animations */
         .sat-1 { animation: orbit 12s linear infinite; }
         .sat-1b { animation: orbit 12s linear infinite; animation-delay: -6s; }
         
@@ -466,7 +461,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Ensure satellites face roughly correctly (billboard effect simplified) */
         .satellite::after {
             content: '';
             display: block;
