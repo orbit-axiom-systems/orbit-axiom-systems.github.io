@@ -90,7 +90,7 @@
             color: var(--text-primary);
         }
 
-        /* Hamburger Menu Button (Hidden on Desktop) */
+        /* Hamburger Menu Button */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -113,7 +113,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Hamburger Animation States */
         .hamburger.active span:nth-child(1) {
             transform: rotate(45deg) translate(5px, 5px);
         }
@@ -323,7 +322,7 @@
             margin-top: 4rem;
         }
         
-        /* UPDATED SOLUTION VISUAL STYLING */
+        /* --- VISUAL CONTAINER --- */
         .solution-visual {
             position: relative;
             height: 450px;
@@ -334,9 +333,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column; /* Stack vertically */
+            flex-direction: column;
         }
-
+        
         .visual-container {
             display: flex;
             flex-direction: column;
@@ -360,88 +359,111 @@
             letter-spacing: 0.05em;
         }
         
-        /* --- NEW CONSTELLATION VISUALIZATION CSS --- */
+        /* --- CSS EARTH & CONSTELLATION --- */
         .orbit-visualization {
             position: relative;
             width: 320px;
             height: 320px;
+            /* Create a 3D space */
             transform-style: preserve-3d;
-            perspective: 1000px;
+            perspective: 800px; 
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
-        /* Earth Styling - More "Terrestrial" Blue */
+        
+        /* The Realistic Earth */
         .earth {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle at 35% 35%, #4a9eff, #0a2a4a 80%);
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
+            /* Using a map texture from Three.js examples (public domain).
+               It loops horizontally to simulate spin.
+            */
+            background: url('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg') repeat-x;
+            background-size: 200% 100%; /* Double width for looping */
             z-index: 10;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8);
+            animation: earth-spin 30s linear infinite;
+            /* Inner shadow creates the night side and spherical look */
+            box-shadow: inset 16px 0 40px 6px rgba(0,0,0,0.9), 
+                        inset -4px 0 10px 2px rgba(255, 255, 255, 0.1);
         }
 
-        /* Atmosphere Glow behind Earth */
+        @keyframes earth-spin {
+            0% { background-position: 0 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Earth Atmosphere Glow */
         .earth-glow {
             position: absolute;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(74, 158, 255, 0.15) 0%, transparent 70%);
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 158, 255, 0.2) 0%, transparent 60%);
             z-index: 1;
         }
-
-        /* Base Orbit Ring Style */
+        
+        /* Constellation Rings */
+        /* We make them elliptical using transform to look like orbits, not atoms */
         .orbit-ring {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 240px;
-            height: 240px;
-            border: 1px solid rgba(74, 158, 255, 0.2); /* Subtle blue line */
+            width: 260px;
+            height: 260px;
+            border: 1px solid rgba(74, 158, 255, 0.15);
             border-radius: 50%;
             transform-style: preserve-3d;
+            /* Positioned centered before rotation */
+            margin-top: -130px; 
+            margin-left: -130px;
         }
-
-        /* Ring 1: Tilted Left */
-        .ring-1 {
-            transform: translate(-50%, -50%) rotateZ(60deg) rotateX(75deg);
-        }
-
-        /* Ring 2: Tilted Right */
-        .ring-2 {
-            transform: translate(-50%, -50%) rotateZ(-60deg) rotateX(75deg);
-        }
-
-        /* Ring 3: Flat/Horizontal (Equatorial) */
-        .ring-3 {
-            transform: translate(-50%, -50%) rotateX(75deg);
-        }
-
-        /* Satellite Styling */
+        
+        /* 4 Planes - Staggered angles */
+        .ring-1 { transform: rotateY(70deg) rotateX(45deg); }
+        .ring-2 { transform: rotateY(70deg) rotateX(-45deg); }
+        .ring-3 { transform: rotateY(70deg) rotateX(15deg); }
+        .ring-4 { transform: rotateY(70deg) rotateX(-15deg); }
+        
+        /* Satellites - Tiny panels */
         .satellite {
             position: absolute;
             top: 0;
             left: 50%;
             width: 6px;
-            height: 6px;
-            background: #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-            transform-origin: 0 120px; /* Radius of the orbit (half of ring width) */
+            height: 8px; /* Rectangular panel shape */
+            background: #a0cfff;
+            box-shadow: 0 0 6px rgba(160, 207, 255, 0.8);
+            transform-origin: 0 130px; /* Orbit radius (half of ring width) */
+            margin-left: -3px; /* Center alignment */
         }
-
-        /* Satellite Animations - Different Speeds */
-        .sat-1 { animation: orbit 8s linear infinite; }
-        .sat-2 { animation: orbit 12s linear infinite reverse; }
-        .sat-3 { animation: orbit 10s linear infinite; animation-delay: -3s; }
-
-        /* The Orbit Animation Keyframes */
+        
+        /* Animations for satellites - Staggered */
+        .sat-1 { animation: orbit 12s linear infinite; }
+        .sat-1b { animation: orbit 12s linear infinite; animation-delay: -6s; } /* Opposite side */
+        
+        .sat-2 { animation: orbit 15s linear infinite reverse; }
+        .sat-2b { animation: orbit 15s linear infinite reverse; animation-delay: -7.5s; }
+        
+        .sat-3 { animation: orbit 10s linear infinite; animation-delay: -2s; }
+        .sat-4 { animation: orbit 14s linear infinite reverse; animation-delay: -5s; }
+        
         @keyframes orbit {
-            0% { transform: translateX(-50%) rotate(0deg); }
-            100% { transform: translateX(-50%) rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Ensure satellites face roughly correctly (billboard effect simplified) */
+        /* This keeps them from looking like flat lines at edges */
+        .satellite::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            transform: rotateY(90deg);
         }
         
         .solution-features {
@@ -926,14 +948,20 @@
                         
                         <div class="orbit-ring ring-1">
                             <div class="satellite sat-1"></div>
+                            <div class="satellite sat-1b"></div>
                         </div>
                         
                         <div class="orbit-ring ring-2">
                             <div class="satellite sat-2"></div>
+                            <div class="satellite sat-2b"></div>
                         </div>
                         
                         <div class="orbit-ring ring-3">
                             <div class="satellite sat-3"></div>
+                        </div>
+
+                        <div class="orbit-ring ring-4">
+                            <div class="satellite sat-4"></div>
                         </div>
                     </div>
                     
