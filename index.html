@@ -323,9 +323,10 @@
             margin-top: 4rem;
         }
         
+        /* UPDATED SOLUTION VISUAL STYLING */
         .solution-visual {
             position: relative;
-            height: 400px;
+            height: 450px;
             background: var(--bg-tertiary);
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -333,6 +334,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column; /* Stack vertically */
+        }
+
+        .visual-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .visual-cta {
+            text-align: center;
+            z-index: 2;
+            animation: fadeIn 1s ease forwards 0.5s;
+            opacity: 0;
+        }
+
+        .visual-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.05em;
         }
         
         .orbit-visualization {
@@ -341,6 +366,7 @@
             height: 300px;
         }
         
+        /* Updated Earth: Darker/Wireframe style */
         .earth {
             position: absolute;
             top: 50%;
@@ -348,11 +374,23 @@
             transform: translate(-50%, -50%);
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #1a4a7a, #0a2a4a);
+            background: radial-gradient(circle at 30% 30%, #2a5a9a, #0a0a0f);
+            border: 1px solid rgba(74, 158, 255, 0.3);
             border-radius: 50%;
             box-shadow: 
-                inset -10px -10px 20px rgba(0,0,0,0.5),
-                0 0 40px rgba(74, 158, 255, 0.2);
+                inset -10px -10px 20px rgba(0,0,0,0.8),
+                0 0 20px rgba(74, 158, 255, 0.15);
+        }
+
+        /* Optional Tech Grid Line */
+        .earth::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(74, 158, 255, 0.2);
         }
         
         .orbit-ring {
@@ -385,13 +423,14 @@
             animation: rotate 30s linear infinite;
         }
         
+        /* Updated Satellites: Smaller/Mechanical style */
         .satellite {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
         }
         
         .satellite-1 {
@@ -778,7 +817,7 @@
             
             .solution-visual {
                 order: -1;
-                height: 300px;
+                height: 400px;
             }
             
             .founder-content {
@@ -860,7 +899,7 @@
             <p class="hero-description fade-in delay-2">Current satellite drag predictions rely on physics-based models with no direct sensing of the thermosphere. Atlas Grid changes this with in-situ measurement from a dedicated sensor constellation.</p>
             <div class="hero-cta fade-in delay-3">
                 <a href="#contact" class="btn btn-primary">Get in Touch</a>
-                <a href="#solution" class="btn btn-secondary">Learn More</a>
+                <a href="atlas-grid/index.html" class="btn btn-secondary">View The Grid</a>
             </div>
             <div class="stats-bar fade-in delay-4">
                 <div class="stat">
@@ -907,16 +946,30 @@
         
         <div class="solution-content">
             <div class="solution-visual">
-                <div class="orbit-visualization">
-                    <div class="earth"></div>
-                    <div class="orbit-ring orbit-ring-1"></div>
-                    <div class="orbit-ring orbit-ring-2"></div>
-                    <div class="orbit-ring orbit-ring-3"></div>
-                    <div class="satellite satellite-1"></div>
-                    <div class="satellite satellite-2"></div>
-                    <div class="satellite satellite-3"></div>
+                <div class="visual-container">
+                    <div class="orbit-visualization">
+                        <div class="earth"></div>
+                        <div class="orbit-ring orbit-ring-1"></div>
+                        <div class="orbit-ring orbit-ring-2"></div>
+                        <div class="orbit-ring orbit-ring-3"></div>
+                        <div class="satellite satellite-1"></div>
+                        <div class="satellite satellite-2"></div>
+                        <div class="satellite satellite-3"></div>
+                    </div>
+                    
+                    <div class="visual-cta">
+                        <a href="atlas-grid/index.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            Explore Constellation
+                        </a>
+                        <p class="visual-note">Interactive 3D View</p>
+                    </div>
                 </div>
             </div>
+            
             <div class="solution-features">
                 <div class="feature">
                     <h3>Direct Measurement</h3>
