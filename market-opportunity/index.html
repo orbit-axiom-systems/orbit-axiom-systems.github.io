@@ -1,1 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit Axiom Systems | Market Opportunity</title>
+    <meta name="description" content="Detailed market analysis showing the size and urgency of the real‑time drag forecasting opportunity.">
 
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Theme colours are inherited from the main site for cohesion */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --accent: #4a9eff;
+            --accent-glow: rgba(74,158,255,0.15);
+            --border: #2a2a35;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Instrument Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        h1,h2,h3 {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        h1 {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            margin-bottom: 0.75rem;
+        }
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        p {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Container */
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 3rem 1rem 4rem;
+        }
+        /* Hero section */
+        .hero {
+            padding: 4rem 1rem;
+            text-align: center;
+            background: radial-gradient(circle at 50% 20%, var(--accent-glow), transparent);
+            border-bottom: 1px solid var(--border);
+        }
+        .hero-title {
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+        /* Grid of statistics */
+        .stats-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            position: relative;
+        }
+        .stat-card h3 {
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .stat-card p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        /* Bar chart for competitors */
+        .bar-chart {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .bar-label {
+            width: 20%;
+            font-weight: 500;
+        }
+        .bar-track {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .bar-fill {
+            height: 12px;
+            background: var(--accent);
+        }
+        .bar-value {
+            width: 70px;
+            text-align: right;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+        }
+        /* Demand drivers */
+        .drivers {
+            margin-top: 2rem;
+            background: var(--bg-secondary);
+            padding: 2rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .drivers ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .drivers li {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .drivers li::before {
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+        }
+        /* Figure for slide */
+        .slide {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+        .slide img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .slide figcaption {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        /* Footnotes */
+        .footnotes {
+            margin-top: 3rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+        .footnotes a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .footnotes a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-title">Market Opportunity</div>
+            <h1>The Trillion‑Dollar Blind Spot</h1>
+            <p class="hero-subtitle">The space economy is entering a new era where accurate, real‑time atmospheric data is essential for safe satellite operations. Here we demonstrate that the market for real‑time drag forecasting is vast, growing and critically underserved.</p>
+        </div>
+    </header>
+    <main class="container">
+        <section>
+            <h2>Snapshot of the Opportunity</h2>
+            <p>The numbers below illustrate the enormous economic value at stake and the accelerating demand for accurate drag data. Each metric is linked to its primary source for verification.</p>
+            <div class="stats-grid">
+                <!-- Updated statistic cards showcasing market size, demand and critical gaps -->
+                <div class="stat-card">
+                    <h3>Space Economy</h3>
+                    <div class="value">$1.8 T</div>
+                    <p>Global space economy projected to reach $1.8 trillion by 2035<sup><a href="#fn1">[1]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Satellite Growth</h3>
+                    <div class="value">≈100k</div>
+                    <p>Projected number of satellites in orbit by 2030<sup><a href="#fn2">[2]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Data Services</h3>
+                    <div class="value">$2.69 B</div>
+                    <p>Space‑weather data services market projected to grow from $1.42 B (2024) to $2.69 B by 2033 at a 7.3% CAGR<sup><a href="#fn3">[3]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Orbit Uncertainty</h3>
+                    <div class="value">Largest</div>
+                    <p>Atmospheric drag is the largest source of uncertainty in LEO orbit determination—our real‑time measurements close this gap<sup><a href="#fn4">[4]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Forecast Horizon</h3>
+                    <div class="value">3–7 d / 5 yr</div>
+                    <p>Operators require 3–7 day drag forecasts for conjunction avoidance and maneuvers, and 5‑year forecasts to plan satellites and meet de‑orbit rules<sup><a href="#fn5">[5]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Stakeholder Support</h3>
+                    <div class="value">AXA +</div>
+                    <p>UK Met Office, AXA XL, Atrium Space Insurance and Airbus back missions to measure upper‑atmosphere density<sup><a href="#fn6">[6]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>ESA Space Safety</h3>
+                    <div class="value">€955 M</div>
+                    <p>ESA member states approved €955 M for the Space Safety programme (2025–2027)<sup><a href="#fn7">[7]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>DoC SSA Spend</h3>
+                    <div class="value">$59 M</div>
+                    <p>The U.S. Department of Commerce will spend nearly $59 M on commercial SSA data and infrastructure in FY 2024<sup><a href="#fn8">[8]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Insurance Claims</h3>
+                    <div class="value">$995 M</div>
+                    <p>Insurers paid out $995 M in claims in 2023 while collecting $557 M in premiums; only ~11–17% of LEO satellites are insured<sup><a href="#fn9">[9]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Storm Losses</h3>
+                    <div class="value">38 sats</div>
+                    <p>A minor geomagnetic storm in Feb 2022 caused 38 newly launched satellites to burn up due to enhanced drag<sup><a href="#fn10">[10]</a></sup>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Market Landscape</h2>
+            <p>Investments by government agencies and private firms show that orbital safety and space weather services already command hundreds of millions of dollars. Yet none of these players provide direct, real‑time atmospheric measurements. The chart below contrasts current spending on space safety and situational awareness.</p>
+            <div class="bar-chart">
+                <!-- Spending comparison: budgets and revenue vs. our untapped opportunity -->
+                <div class="bar">
+                    <div class="bar-label">ESA Space Safety</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+                    <div class="bar-value">€955 M</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-label">DoC SSA</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 6%;"></div></div>
+                    <div class="bar-value">$59 M</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-label">LeoLabs</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 5%;"></div></div>
+                    <div class="bar-value">$50 M+</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-label">Spire</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 12%;"></div></div>
+                    <div class="bar-value">$110 M</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-label">Data Services</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 28%;"></div></div>
+                    <div class="bar-value">$2.69 B</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-label">Real‑time Drag</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 1%; background: var(--border);"></div></div>
+                    <div class="bar-value">No provider</div>
+                </div>
+            </div>
+            <p style="margin-top:1rem;font-size:0.9rem;color:var(--text-secondary);">Note: bars are scaled relative to ESA’s €955 M budget for visual comparison only; the Data Services bar corresponds to the projected $2.69 B market in 2033.</p>
+        </section>
+
+        <section class="drivers">
+            <h2>Demand Drivers &amp; Pain Points</h2>
+            <ul>
+                <li><strong>Orbit uncertainty:</strong> Neutral‑density changes are the largest perturbation in LEO; operators require 3–7 day forecasts to avoid conjunctions and 5‑year forecasts to design satellites and meet de‑orbit rules<sup><a href="#fn4">[4]</a><a href="#fn5">[5]</a></sup>.</li>
+                <li><strong>Traffic boom:</strong> The number of satellites may exceed 100 000 by 2030 and collision maneuvers are skyrocketing (Starlink executed ~144 000 collision‑avoidance maneuvers in six months); accurate now‑casting is critical for launch controllers, space‑traffic managers and operators<sup><a href="#fn2">[2]</a><a href="#fn15">[15]</a><a href="#fn10">[10]</a></sup>.</li>
+                <li><strong>Insurance &amp; risk:</strong> Launch providers must carry insurance; independent environment data is vital for risk management and return on investment, yet insurers paid nearly $1 B in claims in 2023 and only a small fraction of LEO satellites are insured<sup><a href="#fn9">[9]</a><a href="#fn12">[12]</a></sup>.</li>
+                <li><strong>Model &amp; data gaps:</strong> Most users rely on empirical models from the 1970s–80s; the DoD’s high‑accuracy catalogue is restricted to allies and NOAA’s existing scales provide no drag alerts. Operators are calling for real‑time neutral‑density observations and standardised inputs<sup><a href="#fn11">[11]</a><a href="#fn8">[8]</a></sup>.</li>
+                <li><strong>Stakeholder demand:</strong> Diverse sectors—from power grids to insurers—have publicly called for direct neutral‑density measurements. The UK Met Office, AXA XL, Atrium Space Insurance and Airbus formally back missions to deliver this data<sup><a href="#fn6">[6]</a></sup>.</li>
+                <li><strong>Growing market:</strong> Space‑weather data services will nearly double by 2033; agencies like ESA and DoC spend heavily on space safety, and commercial players like LeoLabs and Spire show rapid growth—yet none measure real‑time drag<sup><a href="#fn3">[3]</a><a href="#fn7">[7]</a><a href="#fn8">[8]</a><a href="#fn13">[13]</a><a href="#fn14">[14]</a></sup>.</li>
+            </ul>
+        </section>
+
+
+        <section>
+            <h2>Why Orbit Axiom?</h2>
+            <p>Orbit Axiom Systems is pioneering a new data infrastructure layer for orbit. Our on‑orbit sensors directly measure thermospheric density and composition, enabling real‑time drag forecasts that models alone cannot provide. By integrating physics‑based measurements across the solar–terrestrial chain, we empower satellite operators to plan maneuvers, protect assets and reduce insurance costs.</p>
+            <p>Investing at the pre‑seed stage means contributing to a solution that will become integral to operating in space. We are ready to demonstrate the Atlas Grid prototype and secure early contracts, and we invite partners who share our vision for safer, more efficient orbital operations.</p>
+        </section>
+        
+        <section class="footnotes">
+            <p><strong>Sources</strong></p>
+            <ol>
+                <li id="fn1">World Economic Forum: analysis projecting the space economy will reach <em>$1.8 trillion</em> by 2035【576640941682379†L25-L40】.</li>
+                <li id="fn2">Gulf News: projections suggest the number of satellites could reach <em>~100 000</em> by 2030【9822599443995†L120-L123】.</li>
+                <li id="fn3">Growth Market Reports: the global space‑weather data services market reached <em>$1.42 B</em> in 2024 and is expected to grow to <em>$2.69 B</em> by 2033 at a 7.3% CAGR【141322410053351†L115-L123】.</li>
+                <li id="fn4">NOAA Space Weather Prediction Center: neutral‑density driven atmospheric drag is the largest uncertainty in orbit determination for LEO satellites【632198706976073†L333-L337】.</li>
+                <li id="fn5">SWAG report: changes in neutral density are the largest orbital perturbation; operators need 3–7 day and 5‑year drag forecasts for conjunction avoidance, maneuvers and mission planning【658033739057016†L613-L633】.</li>
+                <li id="fn6">ROARS mission proposal: the UK Met Office, AXA XL, Atrium Space Insurance and Airbus expressed formal support for a mission to measure upper‑atmosphere density【620763471094581†L223-L229】.</li>
+                <li id="fn7">ESA: member states approved €955 M for the Space Safety programme for 2025–2027【681855231178576†L58-L64】.</li>
+                <li id="fn8">U.S. Commerce and DoD: the Department of Commerce will spend almost $59 M on commercial SSA acquisitions in FY 2024; the high‑accuracy satellite‑drag catalogue remains restricted to allies and partners【566825446843450†L145-L149】【566825446843450†L103-L108】.</li>
+                <li id="fn9">Slingshot Aerospace/Insurance: in 2023, insurers paid <em>$995 M</em> in claims while collecting <em>$557 M</em> in premiums, leaving few underwriters in the market and only 11–17% of LEO satellites insured【916668779046450†L100-L139】.</li>
+                <li id="fn10">SWAG Starlink case: a February 2022 geomagnetic storm caused 38 Starlink satellites to burn up; experts concluded that improved space‑weather forecasting is crucial for launch controllers, space traffic managers and operators【658033739057016†L4670-L4682】.</li>
+                <li id="fn11">SWAG neutral‑density data gaps: most users rely on empirical models from the 1970s–80s and desire real‑time neutral‑density observations and standardized inputs; NOAA currently has no drag‑specific alerts【658033739057016†L4701-L4754】【570216469423798†L154-L169】.</li>
+                <li id="fn12">SWAG insurance & ROI: FAA requires insurance for launches; participants noted that independent measurements of the space environment are extremely valuable for risk management and return on investment【658033739057016†L3923-L3929】【658033739057016†L3964-L3979】.</li>
+                <li id="fn13">LeoLabs: the company reported more than $50 M in contracts in 2024 and nearly 140% revenue growth【661427989601884†L542-L551】.</li>
+                <li id="fn14">Spire Global: its space‑data business generated $110.5 M in revenue in 2024【829007318269644†L62-L93】.</li>
+                <li id="fn15">Aerospace America: Starlink satellites executed 144 404 collision‑avoidance maneuvers between December 2024 and May 2025【691747341636360†L186-L190】.</li>
+            </ol>
+        </section>
+    </main>
+</body>
+</html>
