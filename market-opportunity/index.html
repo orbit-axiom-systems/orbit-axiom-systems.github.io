@@ -177,7 +177,6 @@
         
         /* Hero section */
         .hero {
-            /* Padding increased to clear fixed header */
             padding: 8rem 1rem 4rem;
             text-align: center;
             background: radial-gradient(circle at 50% 20%, var(--accent-glow), transparent);
@@ -230,7 +229,7 @@
             line-height: 1.4;
         }
         
-        /* Bar chart for competitors */
+        /* Bar chart */
         .bar-chart {
             margin-top: 2.5rem;
             display: flex;
@@ -291,23 +290,6 @@
             position: absolute;
             left: 0;
             top: 0.3rem;
-        }
-        
-        /* Figure for slide */
-        .slide {
-            margin-top: 2.5rem;
-            text-align: center;
-        }
-        .slide img {
-            max-width: 100%;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        .slide figcaption {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-style: italic;
         }
         
         /* Footnotes */
@@ -375,8 +357,8 @@
                 </div>
                 <div class="stat-card">
                     <h3>Combined TAM</h3>
-                    <div class="value">$7 B</div>
-                    <p>Combined market for Space Weather and SSA projected to reach $7 B by 2032 with aggressive growth<sup><a href="#fn3">[3]</a></sup>.</p>
+                    <div class="value">$7.0 B</div>
+                    <p>Space Weather ($2.8 B) and SSA ($4.2 B) markets combine for a $7.0 B opportunity by 2032<sup><a href="#fn3">[3]</a></sup>.</p>
                 </div>
                 <div class="stat-card">
                     <h3>Orbit Uncertainty</h3>
@@ -384,9 +366,14 @@
                     <p>Atmospheric drag is the largest source of uncertainty in LEO orbit determination—our real‑time measurements close this gap<sup><a href="#fn4">[4]</a></sup>.</p>
                 </div>
                 <div class="stat-card">
+                    <h3>Verified Spend</h3>
+                    <div class="value">$513 M</div>
+                    <p>Verified U.S. government contracts for space weather and drag-related services (2023–2025) exceed $513 M<sup><a href="#fn16">[16]</a></sup>.</p>
+                </div>
+                <div class="stat-card">
                     <h3>Forecast Horizon</h3>
                     <div class="value">3–7 d / 5 yr</div>
-                    <p>Operators require 3–7 day drag forecasts for conjunction avoidance and maneuvers, and 5‑year forecasts to plan satellites and meet de‑orbit rules<sup><a href="#fn5">[5]</a></sup>.</p>
+                    <p>Operators require 3–7 day drag forecasts for conjunction avoidance and maneuvers, and 5‑year forecasts to plan satellites<sup><a href="#fn5">[5]</a></sup>.</p>
                 </div>
                 <div class="stat-card">
                     <h3>Stakeholder Support</h3>
@@ -399,14 +386,9 @@
                     <p>ESA member states approved €955 M for the Space Safety programme (2025–2027)<sup><a href="#fn7">[7]</a></sup>.</p>
                 </div>
                 <div class="stat-card">
-                    <h3>DoC SSA Spend</h3>
-                    <div class="value">$59 M</div>
-                    <p>The U.S. Department of Commerce will spend nearly $59 M on commercial SSA data and infrastructure in FY 2024<sup><a href="#fn8">[8]</a></sup>.</p>
-                </div>
-                <div class="stat-card">
                     <h3>Insurance Claims</h3>
                     <div class="value">$995 M</div>
-                    <p>Insurers paid out $995 M in claims in 2023 while collecting $557 M in premiums; only ~11–17% of LEO satellites are insured<sup><a href="#fn9">[9]</a></sup>.</p>
+                    <p>Insurers paid out $995 M in claims in 2023 while collecting only $557 M in premiums (~179% loss ratio)<sup><a href="#fn9">[9]</a></sup>.</p>
                 </div>
                 <div class="stat-card">
                     <h3>Storm Losses</h3>
@@ -418,32 +400,32 @@
 
         <section>
             <h2>Market Landscape</h2>
-            <p>Investments by government agencies and private firms show that orbital safety and space weather services already command hundreds of millions of dollars. Yet none of these players provide direct, real‑time atmospheric measurements. The chart below contrasts current spending on space safety and situational awareness.</p>
+            <p>Investments by government agencies and private firms show that orbital safety and space weather services already command hundreds of millions of dollars. The chart below contrasts current spending on space safety and situational awareness.</p>
             <div class="bar-chart">
                 <div class="bar">
                     <div class="bar-label">ESA Space Safety</div>
-                    <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 14%;"></div></div>
                     <div class="bar-value">€955 M</div>
                 </div>
                 <div class="bar">
-                    <div class="bar-label">DoC SSA</div>
-                    <div class="bar-track"><div class="bar-fill" style="width: 6%;"></div></div>
-                    <div class="bar-value">$59 M</div>
+                    <div class="bar-label">Verified Spend</div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 7%;"></div></div>
+                    <div class="bar-value">$513 M</div>
                 </div>
                 <div class="bar">
                     <div class="bar-label">LeoLabs</div>
-                    <div class="bar-track"><div class="bar-fill" style="width: 5%;"></div></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 1%;"></div></div>
                     <div class="bar-value">$50 M+</div>
                 </div>
                 <div class="bar">
                     <div class="bar-label">Spire</div>
-                    <div class="bar-track"><div class="bar-fill" style="width: 12%;"></div></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
                     <div class="bar-value">$110 M</div>
                 </div>
                 <div class="bar">
                     <div class="bar-label">TAM (2032)</div>
                     <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
-                    <div class="bar-value">$7 B</div>
+                    <div class="bar-value">$7.0 B</div>
                 </div>
                 <div class="bar">
                     <div class="bar-label">Real‑time Drag</div>
@@ -451,21 +433,20 @@
                     <div class="bar-value">No provider</div>
                 </div>
             </div>
-            <p style="margin-top:1rem;font-size:0.9rem;color:var(--text-secondary);">Note: bars are scaled relative to ESA’s €955 M budget; the TAM bar corresponds to the projected $7 B combined market in 2032.</p>
+            <p style="margin-top:1rem;font-size:0.9rem;color:var(--text-secondary);">Note: Bars are scaled relative to the $7.0 B projected TAM.</p>
         </section>
 
         <section class="drivers">
             <h2>Demand Drivers &amp; Pain Points</h2>
             <ul>
                 <li><strong>Orbit uncertainty:</strong> Neutral‑density changes are the largest perturbation in LEO; operators require 3–7 day forecasts to avoid conjunctions and 5‑year forecasts to design satellites and meet de‑orbit rules<sup><a href="#fn4">[4]</a><a href="#fn5">[5]</a></sup>.</li>
-                <li><strong>Traffic boom:</strong> The number of satellites may exceed 100 000 by 2030 and collision maneuvers are skyrocketing (Starlink executed ~144 000 collision‑avoidance maneuvers in six months); accurate now‑casting is critical for launch controllers, space‑traffic managers and operators<sup><a href="#fn2">[2]</a><a href="#fn15">[15]</a><a href="#fn10">[10]</a></sup>.</li>
-                <li><strong>Insurance &amp; risk:</strong> Launch providers must carry insurance; independent environment data is vital for risk management and return on investment, yet insurers paid nearly $1 B in claims in 2023 and only a small fraction of LEO satellites are insured<sup><a href="#fn9">[9]</a><a href="#fn12">[12]</a></sup>.</li>
-                <li><strong>Model &amp; data gaps:</strong> Most users rely on empirical models from the 1970s–80s; the DoD’s high‑accuracy catalogue is restricted to allies and NOAA’s existing scales provide no drag alerts. Operators are calling for real‑time neutral‑density observations and standardised inputs<sup><a href="#fn11">[11]</a><a href="#fn8">[8]</a></sup>.</li>
-                <li><strong>Stakeholder demand:</strong> Diverse sectors—from power grids to insurers—have publicly called for direct neutral‑density measurements. The UK Met Office, AXA XL, Atrium Space Insurance and Airbus formally back missions to deliver this data<sup><a href="#fn6">[6]</a></sup>.</li>
-                <li><strong>Growing market:</strong> Space‑weather data services will nearly double by 2033; agencies like ESA and DoC spend heavily on space safety, and commercial players like LeoLabs and Spire show rapid growth—yet none measure real‑time drag<sup><a href="#fn3">[3]</a><a href="#fn7">[7]</a><a href="#fn8">[8]</a><a href="#fn13">[13]</a><a href="#fn14">[14]</a></sup>.</li>
+                <li><strong>Traffic boom:</strong> The number of satellites may exceed 100 000 by 2030 and collision maneuvers are skyrocketing (Starlink executed ~144 000 collision‑avoidance maneuvers in six months)<sup><a href="#fn2">[2]</a><a href="#fn15">[15]</a></sup>.</li>
+                <li><strong>Insurance &amp; risk:</strong> Insurers paid nearly $1 B in claims in 2023 with a 179% loss ratio, driving an urgent need for independent environmental data to manage risk<sup><a href="#fn9">[9]</a><a href="#fn12">[12]</a></sup>.</li>
+                <li><strong>Model &amp; data gaps:</strong> Most users rely on empirical models from the 1970s–80s; NOAA currently provides no drag-specific alerts. Operators are calling for real‑time neutral‑density observations<sup><a href="#fn11">[11]</a><a href="#fn8">[8]</a></sup>.</li>
+                <li><strong>Stakeholder demand:</strong> The UK Met Office, AXA XL, Atrium Space Insurance and Airbus formally back missions to deliver direct neutral‑density data<sup><a href="#fn6">[6]</a></sup>.</li>
+                <li><strong>Growing market:</strong> The combined market for Space Weather and SSA services is projected to reach $7 B by 2032, driven by heavy government and commercial investment<sup><a href="#fn3">[3]</a><a href="#fn7">[7]</a><a href="#fn13">[13]</a><a href="#fn14">[14]</a></sup>.</li>
             </ul>
         </section>
-
 
         <section>
             <h2>Why Orbit Axiom?</h2>
@@ -478,19 +459,20 @@
             <ol>
                 <li id="fn1">World Economic Forum: analysis projecting the space economy will reach <em>$1.8 trillion</em> by 2035【576640941682379†L25-L40】.</li>
                 <li id="fn2">Gulf News: projections suggest the number of satellites could reach <em>~100 000</em> by 2030【9822599443995†L120-L123】.</li>
-                <li id="fn3">DataIntelo: The global Space Situational Awareness (SSA) market is projected to reach <em>$4.2 B</em> by 2032, and the Space Weather Service market is expected to reach <em>$2.8 B</em>, creating a combined Total Addressable Market (TAM) of <em>$7 B</em>【Source: DataIntelo Analysis】.</li>
+                <li id="fn3">DataIntelo &amp; Fortune Business Insights: DataIntelo projects the Space Weather market to reach <em>$2.8 B</em> (2032), and Fortune Business Insights projects the SSA market to reach <em>$4.2 B</em> (2032), creating a combined TAM of <em>$7.0 B</em>.</li>
                 <li id="fn4">NOAA Space Weather Prediction Center: neutral‑density driven atmospheric drag is the largest uncertainty in orbit determination for LEO satellites【632198706976073†L333-L337】.</li>
                 <li id="fn5">SWAG report: changes in neutral density are the largest orbital perturbation; operators need 3–7 day and 5‑year drag forecasts for conjunction avoidance, maneuvers and mission planning【658033739057016†L613-L633】.</li>
                 <li id="fn6">ROARS mission proposal: the UK Met Office, AXA XL, Atrium Space Insurance and Airbus expressed formal support for a mission to measure upper‑atmosphere density【620763471094581†L223-L229】.</li>
                 <li id="fn7">ESA: member states approved €955 M for the Space Safety programme for 2025–2027【681855231178576†L58-L64】.</li>
-                <li id="fn8">U.S. Commerce and DoD: the Department of Commerce will spend almost $59 M on commercial SSA acquisitions in FY 2024; the high‑accuracy satellite‑drag catalogue remains restricted to allies and partners【566825446843450†L145-L149】【566825446843450†L103-L108】.</li>
-                <li id="fn9">Slingshot Aerospace/Insurance: in 2023, insurers paid <em>$995 M</em> in claims while collecting <em>$557 M</em> in premiums, leaving few underwriters in the market and only 11–17% of LEO satellites insured【916668779046450†L100-L139】.</li>
-                <li id="fn10">SWAG Starlink case: a February 2022 geomagnetic storm caused 38 Starlink satellites to burn up; experts concluded that improved space‑weather forecasting is crucial for launch controllers, space traffic managers and operators【658033739057016†L4670-L4682】.</li>
-                <li id="fn11">SWAG neutral‑density data gaps: most users rely on empirical models from the 1970s–80s and desire real‑time neutral‑density observations and standardized inputs; NOAA currently has no drag‑specific alerts【658033739057016†L4701-L4754】【570216469423798†L154-L169】.</li>
-                <li id="fn12">SWAG insurance & ROI: FAA requires insurance for launches; participants noted that independent measurements of the space environment are extremely valuable for risk management and return on investment【658033739057016†L3923-L3929】【658033739057016†L3964-L3979】.</li>
-                <li id="fn13">LeoLabs: the company reported more than $50 M in contracts in 2024 and nearly 140% revenue growth【661427989601884†L542-L551】.</li>
-                <li id="fn14">Spire Global: its space‑data business generated $110.5 M in revenue in 2024【829007318269644†L62-L93】.</li>
-                <li id="fn15">Aerospace America: Starlink satellites executed 144 404 collision‑avoidance maneuvers between December 2024 and May 2025【691747341636360†L186-L190】.</li>
+                <li id="fn8">U.S. Commerce and DoD: the Department of Commerce will spend almost $59 M on commercial SSA acquisitions in FY 2024.</li>
+                <li id="fn9">Slingshot Aerospace/Insurance: in 2023, insurers paid <em>$995 M</em> in claims while collecting <em>$557 M</em> in premiums (179% loss ratio).</li>
+                <li id="fn10">SWAG Starlink case: a February 2022 geomagnetic storm caused 38 Starlink satellites to burn up ($50M loss).</li>
+                <li id="fn11">SWAG neutral‑density data gaps: most users rely on empirical models from the 1970s–80s and desire real‑time neutral‑density observations【658033739057016†L4701-L4754】.</li>
+                <li id="fn12">SWAG insurance & ROI: FAA requires insurance for launches; participants noted that independent measurements of the space environment are extremely valuable for risk management【658033739057016†L3923-L3929】.</li>
+                <li id="fn13">LeoLabs: the company reported more than $50 M in contracts in 2024 and nearly 140% revenue growth.</li>
+                <li id="fn14">Spire Global: its space‑data business generated $110.5 M in revenue in 2024.</li>
+                <li id="fn15">Aerospace America: Starlink satellites executed 144 404 collision‑avoidance maneuvers between December 2024 and May 2025.</li>
+                <li id="fn16">Aggregated Contract Value: Verified U.S. government contracts (2023-2025) include NOAA SW Next ($337.2M), NOAA RODB-2 ($59.3M), LeoLabs ($89.4M), and TraCSS ($26.9M), totaling ~$513 M.</li>
             </ol>
         </section>
     </main>
@@ -504,12 +486,9 @@
             hamburger.addEventListener('click', () => {
                 hamburger.classList.toggle('active');
                 navLinks.classList.toggle('active');
-                
-                // Prevent scrolling when menu is open
                 document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
             });
 
-            // Close menu when a link is clicked
             document.querySelectorAll('.nav-links a').forEach(link => {
                 link.addEventListener('click', () => {
                     hamburger.classList.remove('active');
