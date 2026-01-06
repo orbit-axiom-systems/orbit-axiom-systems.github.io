@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <style>
@@ -44,10 +43,114 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
+
+        /* --- NAVIGATION (Added) --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .logo img {
+            height: 28px;
+            width: auto;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+        @media (max-width: 900px) {
+            nav { padding: 1rem 2rem; }
+            .logo img { height: 20px; }
+            .hamburger { display: flex; }
+            
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 100vh;
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 2rem;
+                gap: 2rem;
+                z-index: 1000;
+            }
+            .nav-links.active { display: flex; }
+            .nav-links li a { font-size: 1.5rem; }
+        }
+        
+        /* --- MAIN CONTENT --- */
         
         .atlas-section {
             min-height: 100vh;
-            padding: 4rem 2rem;
+            /* Increased top padding to clear the fixed header */
+            padding: 8rem 2rem 4rem; 
             position: relative;
             overflow: hidden;
         }
@@ -410,15 +513,31 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        /* Pulse animation for satellites */
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
     </style>
 </head>
 <body>
+    <nav>
+        <a href="../index.html" class="logo">
+            <img src="../ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems">
+        </a>
+        
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="../index.html#problem">Problem</a></li>
+            <li><a href="../index.html#solution">Atlas Grid</a></li>
+            <li><a href="../index.html#technology">Technology</a></li>
+            <li><a href="../dashboard/index.html">Dashboard</a></li>
+            <li><a href="../index.html#market">Market</a></li>
+            <li><a href="../index.html#founder">Founder</a></li>
+            <li><a href="../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
     <section class="atlas-section" id="atlas-grid">
         <div class="section-header">
             <span class="section-tag">The Constellation</span>
@@ -427,7 +546,6 @@
         </div>
         
         <div class="constellation-dashboard">
-            <!-- Left Panel: The Physicist (6U) -->
             <div class="satellite-panel physicist">
                 <div class="panel-header">
                     <span class="panel-badge">6U Cubesat</span>
@@ -463,7 +581,6 @@
                 </div>
             </div>
             
-            <!-- Center: Full Constellation -->
             <div class="constellation-main">
                 <div class="constellation-viewport" id="constellation-viewport">
                     <div class="loading-indicator" id="constellation-loading">
@@ -506,7 +623,6 @@
                 </div>
             </div>
             
-            <!-- Right Panel: The Surveyor (3U) -->
             <div class="satellite-panel surveyor">
                 <div class="panel-header">
                     <span class="panel-badge">3U Cubesat</span>
@@ -542,10 +658,87 @@
     </section>
 
     <script>
+        // Hamburger Menu Logic
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+
         // ============================================
-        // ATLAS GRID CONSTELLATION VISUALIZATION
+        // SHARED RESOURCES & UTILITIES
         // ============================================
         
+        // Solar Panel Texture Generator
+        function createSolarCellTexture(size = 512, cells = 10) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Base
+            ctx.fillStyle = '#0e2142';
+            ctx.fillRect(0, 0, size, size);
+
+            // Subtle vignette for depth
+            const grad = ctx.createRadialGradient(size*0.5, size*0.5, size*0.1, size*0.5, size*0.5, size*0.65);
+            grad.addColorStop(0, 'rgba(255,255,255,0.06)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.25)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+
+            // Cell grid
+            const step = size / cells;
+            ctx.strokeStyle = 'rgba(120, 190, 255, 0.3)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i <= cells; i++) {
+                const p = Math.round(i * step) + 0.5;
+                ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, size); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(size, p); ctx.stroke();
+            }
+
+            // Busbar lines (brighter metallic lines)
+            ctx.strokeStyle = 'rgba(200, 235, 255, 0.4)';
+            ctx.lineWidth = 2;
+            for (let j = 1; j < 4; j++) {
+                const y = Math.round((j * size) / 4) + 0.5;
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y); ctx.stroke();
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(1, 1);
+            return tex;
+        }
+
+        // Shared material factory
+        let _sharedSolarMaterial = null;
+        function getSolarPanelMaterial() {
+            if (!_sharedSolarMaterial) {
+                const tex = createSolarCellTexture(512, 12);
+                tex.anisotropy = 4; // Better quality at angles
+                
+                _sharedSolarMaterial = new THREE.MeshPhongMaterial({
+                    map: tex,
+                    color: 0xffffff,
+                    emissive: 0x081427,
+                    emissiveIntensity: 0.4,
+                    shininess: 30,
+                    specular: 0x445588,
+                    side: THREE.DoubleSide
+                });
+            }
+            return _sharedSolarMaterial;
+        }
+
+        // Utility: Degrees to Radians
+        const deg2rad = (deg) => deg * Math.PI / 180;
+
         // Configuration
         const CONFIG = {
             earthRadius: 6371, // km
@@ -565,14 +758,8 @@
             orbitSpeed: 0.02,
             scale: 0.001 // Scale factor for rendering
         };
-        
-        // Utility: Degrees to Radians
-        const deg2rad = (deg) => deg * Math.PI / 180;
-        
-        
-        // Subtle axial tilt for realism (degrees)
-        const AXIAL_TILT = deg2rad(15);
-// ============================================
+
+        // ============================================
         // MAIN CONSTELLATION VIEW
         // ============================================
         function initConstellationView() {
@@ -585,9 +772,9 @@
             // Scene
             const scene = new THREE.Scene();
             
-            // Camera
+            // Camera - POSITION UPDATED: Lower Y for equator view
             const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.set(15, 8, 15);
+            camera.position.set(20, 2, 20); // Was (15, 8, 15)
             camera.lookAt(0, 0, 0);
             
             // Renderer
@@ -602,104 +789,98 @@
             scene.add(ambientLight);
             
             const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            sunLight.position.set(50, 30, 50);
+            sunLight.position.set(50, 20, 50); // Lowered slightly
             scene.add(sunLight);
             
             const fillLight = new THREE.DirectionalLight(0x4a9eff, 0.3);
             fillLight.position.set(-30, -10, -30);
-            scene.add(fillLight);            // Earth (textured)
+            scene.add(fillLight);            
+            
+            // Earth (textured)
             const earthGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale, 64, 64);
             let earth;
 
-// Create Earth immediately with a visible fallback material.
-// Then asynchronously swap in the high-quality textures when they finish loading.
-const textureBase = 'https://threejs.org/examples/textures/planets/';
-const loader = new THREE.TextureLoader();
-loader.crossOrigin = 'anonymous';
+            // Texture Loading
+            const textureBase = 'https://threejs.org/examples/textures/planets/';
+            const loader = new THREE.TextureLoader();
+            loader.crossOrigin = 'anonymous';
 
-function configureTexture(tex) {
-    if (!tex) return tex;
-    tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-    // Best-effort for modern Three.js versions
-    if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-}
+            function configureTexture(tex) {
+                if (!tex) return tex;
+                tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+                if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+                return tex;
+            }
 
-const fallbackMaterial = new THREE.MeshPhongMaterial({
-    color: 0x1a4a7a,
-    emissive: 0x0a1a2a,
-    emissiveIntensity: 0.25,
-    shininess: 12
-});
+            const fallbackMaterial = new THREE.MeshPhongMaterial({
+                color: 0x1a4a7a,
+                emissive: 0x0a1a2a,
+                emissiveIntensity: 0.25,
+                shininess: 12
+            });
 
-earth = new THREE.Mesh(earthGeometry, fallbackMaterial);
-scene.add(earth);
-// Apply axial tilt
-earth.rotation.z = -AXIAL_TILT;
+            earth = new THREE.Mesh(earthGeometry, fallbackMaterial);
+            scene.add(earth);
+            
+            // TILT UPDATED: Set to a subtle 15 degrees on Z 
+            // but effectively seen from the side due to camera position
+            const AXIAL_TILT = deg2rad(15);
+            earth.rotation.z = AXIAL_TILT;
+            earth.rotation.y = 0;
 
-earth.rotation.y = 0; // keep texture orientation deterministic
+            // Cloud layer
+            const cloudsGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.01, 64, 64);
+            const cloudsMaterial = new THREE.MeshPhongMaterial({
+                transparent: true,
+                opacity: 0.0,
+                depthWrite: false
+            });
+            const earthClouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+            scene.add(earthClouds);
+            earthClouds.rotation.z = AXIAL_TILT;
 
-// Subtle cloud layer (also starts as transparent; texture applied when loaded)
-const cloudsGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.01, 64, 64);
-const cloudsMaterial = new THREE.MeshPhongMaterial({
-    transparent: true,
-    opacity: 0.0,          // becomes visible once texture is loaded
-    depthWrite: false
-});
-const earthClouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-scene.add(earthClouds);
-// Match axial tilt
-earthClouds.rotation.z = -AXIAL_TILT;
+            const textures = {};
+            let _earthTexLoaded = 0;
+            const _earthTexTarget = 5;
 
-// Load textures asynchronously and upgrade materials when ready.
-// This avoids a "blackhole" Earth while images are still loading or blocked.
-const textures = {};
-let _earthTexLoaded = 0;
-const _earthTexTarget = 5;
+            function _maybeUpgradeEarthMaterial() {
+                if (_earthTexLoaded < _earthTexTarget) return;
+                if (earth.material && earth.material.map) return;
+                try {
+                    const earthMaterial = new THREE.MeshPhongMaterial({
+                        map: textures.earthDay,
+                        normalMap: textures.earthNormal,
+                        specularMap: textures.earthSpec,
+                        specular: new THREE.Color(0x333333),
+                        shininess: 18,
+                        emissive: new THREE.Color(0xffffff),
+                        emissiveMap: textures.earthNight,
+                        emissiveIntensity: 0.35
+                    });
+                    earth.material = earthMaterial;
 
-function _maybeUpgradeEarthMaterial() {
-    if (_earthTexLoaded < _earthTexTarget) return;
-    // Upgrade only once
-    if (earth.material && earth.material.map) return;
-    try {
-        const earthMaterial = new THREE.MeshPhongMaterial({
-            map: textures.earthDay,
-            normalMap: textures.earthNormal,
-            specularMap: textures.earthSpec,
-            specular: new THREE.Color(0x333333),
-            shininess: 18,
+                    if (textures.earthClouds) {
+                        earthClouds.material.map = textures.earthClouds;
+                        earthClouds.material.opacity = 0.22;
+                        earthClouds.material.needsUpdate = true;
+                    }
+                } catch (e) {}
+            }
 
-            emissive: new THREE.Color(0xffffff),
-            emissiveMap: textures.earthNight,
-            emissiveIntensity: 0.35
-        });
-        earth.material = earthMaterial;
+            function loadTex(key, url) {
+                loader.load(
+                    url,
+                    (tex) => { textures[key] = configureTexture(tex); _earthTexLoaded += 1; _maybeUpgradeEarthMaterial(); },
+                    undefined,
+                    () => { /* onError: keep fallback */ }
+                );
+            }
 
-        if (textures.earthClouds) {
-            earthClouds.material.map = textures.earthClouds;
-            earthClouds.material.opacity = 0.22;
-            earthClouds.material.needsUpdate = true;
-        }
-    } catch (e) {
-        // If anything fails, keep the fallback material.
-    }
-}
-
-function loadTex(key, url) {
-    loader.load(
-        url,
-        (tex) => { textures[key] = configureTexture(tex); _earthTexLoaded += 1; _maybeUpgradeEarthMaterial(); },
-        undefined,
-        () => { /* onError: keep fallback */ }
-    );
-}
-
-// Day, normals, specular, night lights, and clouds
-loadTex('earthDay', textureBase + 'earth_atmos_2048.jpg');
-loadTex('earthNormal', textureBase + 'earth_normal_2048.jpg');
-loadTex('earthSpec', textureBase + 'earth_specular_2048.jpg');
-loadTex('earthNight', textureBase + 'earth_lights_2048.png');
-loadTex('earthClouds', textureBase + 'earth_clouds_1024.png');
+            loadTex('earthDay', textureBase + 'earth_atmos_2048.jpg');
+            loadTex('earthNormal', textureBase + 'earth_normal_2048.jpg');
+            loadTex('earthSpec', textureBase + 'earth_specular_2048.jpg');
+            loadTex('earthNight', textureBase + 'earth_lights_2048.png');
+            loadTex('earthClouds', textureBase + 'earth_clouds_1024.png');
             
             // Earth glow
             const glowGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.02, 64, 64);
@@ -711,8 +892,7 @@ loadTex('earthClouds', textureBase + 'earth_clouds_1024.png');
             });
             const earthGlow = new THREE.Mesh(glowGeometry, glowMaterial);
             scene.add(earthGlow);
-// Match axial tilt
-earthGlow.rotation.z = -AXIAL_TILT;
+            earthGlow.rotation.z = AXIAL_TILT;
             
             // Atmosphere edge
             const atmosphereGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale * 1.08, 64, 64);
@@ -724,10 +904,9 @@ earthGlow.rotation.z = -AXIAL_TILT;
             });
             const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
             scene.add(atmosphere);
-// Match axial tilt
-atmosphere.rotation.z = -AXIAL_TILT;
+            atmosphere.rotation.z = AXIAL_TILT;
             
-            // Altitude shells (as rings/tori for visualization)
+            // Altitude shells
             Object.entries(CONFIG.shells).forEach(([name, shell]) => {
                 const shellRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
                 const shellGeometry = new THREE.TorusGeometry(shellRadius, 0.02, 16, 100);
@@ -737,7 +916,6 @@ atmosphere.rotation.z = -AXIAL_TILT;
                     opacity: shell.opacity * 3
                 });
                 
-                // Create multiple rings at different angles to suggest a shell
                 for (let i = 0; i < 3; i++) {
                     const ring = new THREE.Mesh(shellGeometry, shellMaterial);
                     ring.rotation.x = Math.PI / 2 + (i - 1) * 0.3;
@@ -749,12 +927,9 @@ atmosphere.rotation.z = -AXIAL_TILT;
             // Orbital planes visualization
             CONFIG.planes.forEach((plane, planeIndex) => {
                 const planeGroup = new THREE.Group();
-                
-                // Rotate group for RAAN and inclination
                 planeGroup.rotation.y = deg2rad(plane.raan);
                 planeGroup.rotation.x = deg2rad(90 - plane.inclination);
                 
-                // Orbital path ring for each shell
                 Object.entries(CONFIG.shells).forEach(([shellName, shell]) => {
                     const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
                     const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.01, orbitRadius + 0.01, 128);
@@ -774,74 +949,13 @@ atmosphere.rotation.z = -AXIAL_TILT;
             
             // Satellites
             const satellites = [];
-            
-            // Create satellite geometry
-            
-            // --------------------------------------------
-            // Solar panel texture (shared across 3U / 6U)
-            // --------------------------------------------
-            function createSolarCellTexture(size = 256, cells = 10) {
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
+            const solarPanelMaterial = getSolarPanelMaterial();
 
-                // Base
-                ctx.fillStyle = '#0e2142';
-                ctx.fillRect(0, 0, size, size);
-
-                // Subtle vignette
-                const grad = ctx.createRadialGradient(size*0.5, size*0.5, size*0.1, size*0.5, size*0.5, size*0.65);
-                grad.addColorStop(0, 'rgba(255,255,255,0.06)');
-                grad.addColorStop(1, 'rgba(0,0,0,0.25)');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, size, size);
-
-                // Cell grid
-                const step = size / cells;
-                ctx.strokeStyle = 'rgba(120, 190, 255, 0.22)';
-                ctx.lineWidth = 1;
-
-                for (let i = 0; i <= cells; i++) {
-                    const p = Math.round(i * step) + 0.5;
-                    ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, size); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(size, p); ctx.stroke();
-                }
-
-                // A few "busbar" lines for realism
-                ctx.strokeStyle = 'rgba(200, 235, 255, 0.18)';
-                ctx.lineWidth = 2;
-                for (let j = 1; j < 4; j++) {
-                    const y = Math.round((j * size) / 4) + 0.5;
-                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y); ctx.stroke();
-                }
-
-                const tex = new THREE.CanvasTexture(canvas);
-                tex.wrapS = THREE.RepeatWrapping;
-                tex.wrapT = THREE.RepeatWrapping;
-                tex.repeat.set(1, 1);
-                tex.needsUpdate = true;
-                return tex;
-            }
-
-            const solarPanelTexture = createSolarCellTexture(256, 12);
-            // Ensure crispness at oblique angles
-            solarPanelTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-
-            const solarPanelMaterial = new THREE.MeshPhongMaterial({
-                map: solarPanelTexture,
-                color: 0xffffff,
-                emissive: 0x081427,
-                emissiveIntensity: 0.35,
-                shininess: 22,
-                side: THREE.DoubleSide
-            });
-
-function createSatellite(isPhysicist) {
+            function createSatellite(isPhysicist) {
                 const group = new THREE.Group();
                 
                 if (isPhysicist) {
-                    // 6U - larger, more complex
+                    // 6U
                     const bodyGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.1);
                     const bodyMaterial = new THREE.MeshPhongMaterial({
                         color: 0x333344,
@@ -853,23 +967,22 @@ function createSatellite(isPhysicist) {
                     
                     // Solar panels
                     const panelGeometry = new THREE.BoxGeometry(0.3, 0.15, 0.01);
-                    const panelMaterial = solarPanelMaterial;
-                    const leftPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    const leftPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
                     leftPanel.position.set(-0.22, 0, 0);
                     group.add(leftPanel);
                     
-                    const rightPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    const rightPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
                     rightPanel.position.set(0.22, 0, 0);
                     group.add(rightPanel);
                     
-                    // Magnetometer boom
+                    // Boom
                     const boomGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 8);
                     const boomMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
                     const boom = new THREE.Mesh(boomGeometry, boomMaterial);
                     boom.position.set(0, 0.22, 0);
                     group.add(boom);
                     
-                    // Glow sphere
+                    // Glow
                     const glowGeometry = new THREE.SphereGeometry(0.08, 16, 16);
                     const glowMaterial = new THREE.MeshBasicMaterial({
                         color: CONFIG.physicistColor,
@@ -880,7 +993,7 @@ function createSatellite(isPhysicist) {
                     group.add(glow);
                     
                 } else {
-                    // 3U - dart-shaped, simpler
+                    // 3U
                     const bodyGeometry = new THREE.BoxGeometry(0.08, 0.2, 0.08);
                     const bodyMaterial = new THREE.MeshPhongMaterial({
                         color: 0x333344,
@@ -890,18 +1003,17 @@ function createSatellite(isPhysicist) {
                     const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
                     group.add(body);
                     
-                    // Small panels
+                    // Panels
                     const panelGeometry = new THREE.BoxGeometry(0.12, 0.08, 0.005);
-                    const panelMaterial = solarPanelMaterial;
-                    const leftPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    const leftPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
                     leftPanel.position.set(-0.1, 0, 0);
                     group.add(leftPanel);
                     
-                    const rightPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+                    const rightPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
                     rightPanel.position.set(0.1, 0, 0);
                     group.add(rightPanel);
                     
-                    // Glow sphere
+                    // Glow
                     const glowGeometry = new THREE.SphereGeometry(0.05, 16, 16);
                     const glowMaterial = new THREE.MeshBasicMaterial({
                         color: CONFIG.surveyorColor,
@@ -915,19 +1027,16 @@ function createSatellite(isPhysicist) {
                 return group;
             }
             
-            // Distribute satellites across planes and shells
-            // 6 Physicists: 1-2 per plane in B/C shells
-            // 24 Surveyors: 6 per plane across all shells
-            
+            // Distribute satellites
             CONFIG.planes.forEach((plane, planeIndex) => {
                 const planeGroup = new THREE.Group();
                 planeGroup.rotation.y = deg2rad(plane.raan);
                 planeGroup.rotation.x = deg2rad(90 - plane.inclination);
                 
-                // Physicist satellites (1-2 per plane, B/C shells only)
+                // Physicists
                 const physicistShells = ['B', 'C'];
                 physicistShells.forEach((shellName, shellIdx) => {
-                    if (planeIndex < 3 || shellIdx === 0) { // 6 total: 2 in planes 0-2, 1 in plane 3
+                    if (planeIndex < 3 || shellIdx === 0) { 
                         const shell = CONFIG.shells[shellName];
                         const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
                         const angle = (planeIndex * 90 + shellIdx * 45 + 15) * Math.PI / 180;
@@ -945,7 +1054,7 @@ function createSatellite(isPhysicist) {
                     }
                 });
                 
-                // Surveyor satellites (6 per plane, distributed across shells)
+                // Surveyors
                 const shellNames = ['A', 'B', 'C'];
                 for (let i = 0; i < 6; i++) {
                     const shellName = shellNames[i % 3];
@@ -968,10 +1077,10 @@ function createSatellite(isPhysicist) {
                 scene.add(planeGroup);
             });
             
-            // Mouse controls for orbit
+            // Mouse controls
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
-            let cameraAngle = { theta: 0.85, phi: 1.2 };
+            let cameraAngle = { theta: 0.8, phi: 1.5 }; // phi ~ PI/2 starts at equator
             let cameraDistance = 25;
             
             container.addEventListener('mousedown', (e) => {
@@ -1022,36 +1131,30 @@ function createSatellite(isPhysicist) {
             
             container.addEventListener('touchend', () => touchStart = null);
             
-            // Animation loop
             function animate() {
                 requestAnimationFrame(animate);
                 
-                // Update camera position
                 camera.position.x = cameraDistance * Math.sin(cameraAngle.phi) * Math.cos(cameraAngle.theta);
                 camera.position.y = cameraDistance * Math.cos(cameraAngle.phi);
                 camera.position.z = cameraDistance * Math.sin(cameraAngle.phi) * Math.sin(cameraAngle.theta);
                 camera.lookAt(0, 0, 0);
                 
-                // Rotate Earth slowly
                 earth.rotation.y += 0.001;
                 earthGlow.rotation.y += 0.001;
                 
                 if (typeof earthClouds !== 'undefined') earthClouds.rotation.y += 0.0015;
-                // Update satellite positions
+                
                 satellites.forEach(({ mesh }) => {
                     mesh.userData.angle += mesh.userData.speed * 0.01;
                     const r = mesh.userData.orbitRadius;
                     mesh.position.x = r * Math.cos(mesh.userData.angle);
                     mesh.position.z = r * Math.sin(mesh.userData.angle);
-                    
-                    // Point satellite in velocity direction
                     mesh.rotation.y = -mesh.userData.angle + Math.PI / 2;
                 });
                 
                 renderer.render(scene, camera);
             }
             
-            // Handle resize
             window.addEventListener('resize', () => {
                 const newWidth = container.clientWidth;
                 const newHeight = container.clientHeight;
@@ -1078,63 +1181,7 @@ function createSatellite(isPhysicist) {
             const scene = new THREE.Scene();
             
             const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
-            camera.position.set(0, 0, isPhysicist ? 4 : 3)
-
-            // Solar panel texture (shared for 6U and 3U views)
-            const solarPanelTexture = (() => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 512;
-                canvas.height = 512;
-                const ctx = canvas.getContext('2d');
-
-                // Base
-                ctx.fillStyle = '#0b1a34';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Cell grid
-                const cellW = 64;
-                const cellH = 64;
-                for (let y = 0; y < canvas.height; y += cellH) {
-                    for (let x = 0; x < canvas.width; x += cellW) {
-                        const g = ctx.createLinearGradient(x, y, x + cellW, y + cellH);
-                        g.addColorStop(0, '#123b78');
-                        g.addColorStop(0.5, '#0f2f66');
-                        g.addColorStop(1, '#0a1f45');
-                        ctx.fillStyle = g;
-                        ctx.fillRect(x + 3, y + 3, cellW - 6, cellH - 6);
-                    }
-                }
-
-                // Fine bus bars
-                ctx.strokeStyle = 'rgba(210, 230, 255, 0.10)';
-                ctx.lineWidth = 1;
-                for (let y = 0; y <= canvas.height; y += 16) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(canvas.width, y);
-                    ctx.stroke();
-                }
-
-                // Border frame
-                ctx.strokeStyle = 'rgba(210, 230, 255, 0.22)';
-                ctx.lineWidth = 4;
-                ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
-
-                const tex = new THREE.CanvasTexture(canvas);
-                tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-                tex.needsUpdate = true;
-                return tex;
-            })();
-
-            const solarPanelMaterial = new THREE.MeshPhongMaterial({
-                map: solarPanelTexture,
-                color: 0xffffff,
-                emissive: 0x081427,
-                emissiveIntensity: 0.25,
-                shininess: 30,
-                side: THREE.DoubleSide
-            });
-;
+            camera.position.set(0, 0, isPhysicist ? 4 : 3);
             
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
@@ -1161,9 +1208,11 @@ function createSatellite(isPhysicist) {
             // Satellite group
             const satelliteGroup = new THREE.Group();
             
+            // Get shared texture
+            const panelMaterial = getSolarPanelMaterial();
+            
             if (isPhysicist) {
-                // 6U Cubesat - The Physicist
-                // Main body (6U = 10x20x30 cm, scaled up for visibility)
+                // 6U Cubesat
                 const bodyGeometry = new THREE.BoxGeometry(0.8, 1.6, 0.5);
                 const bodyMaterial = new THREE.MeshPhongMaterial({
                     color: 0x2a2a3a,
@@ -1173,7 +1222,7 @@ function createSatellite(isPhysicist) {
                 const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
                 satelliteGroup.add(body);
                 
-                // Gold foil accents
+                // Gold foil
                 const foilGeometry = new THREE.BoxGeometry(0.75, 0.3, 0.52);
                 const foilMaterial = new THREE.MeshPhongMaterial({
                     color: 0xd4af37,
@@ -1188,25 +1237,24 @@ function createSatellite(isPhysicist) {
                 foil2.position.y = -0.5;
                 satelliteGroup.add(foil2);
                 
-                // Solar panels (deployable) — textured (front/back)
+                // Panels (Using Texture)
                 const panelGeometry = new THREE.BoxGeometry(1.5, 1.2, 0.03);
-                const panelMaterial = solarPanelMaterial;
-
+                
                 [-1, 1].forEach(side => {
                     const panel = new THREE.Mesh(panelGeometry, panelMaterial);
                     panel.position.x = side * 1.15;
                     panel.position.y = 0;
                     satelliteGroup.add(panel);
                 });
-
-                // Magnetometer boom
+                
+                // Boom
                 const boomGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1.2, 8);
                 const boomMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
                 const boom = new THREE.Mesh(boomGeometry, boomMaterial);
                 boom.position.y = 1.4;
                 satelliteGroup.add(boom);
                 
-                // Magnetometer sensor head
+                // Sensor
                 const sensorGeometry = new THREE.SphereGeometry(0.08, 16, 16);
                 const sensorMaterial = new THREE.MeshPhongMaterial({
                     color: 0xcccccc,
@@ -1217,7 +1265,7 @@ function createSatellite(isPhysicist) {
                 sensor.position.y = 2;
                 satelliteGroup.add(sensor);
                 
-                // INMS Ram inlet (front)
+                // Inlet
                 const inletGeometry = new THREE.CylinderGeometry(0.12, 0.15, 0.1, 16);
                 const inletMaterial = new THREE.MeshPhongMaterial({
                     color: 0x444455,
@@ -1245,8 +1293,7 @@ function createSatellite(isPhysicist) {
                 satelliteGroup.add(antenna2);
                 
             } else {
-                // 3U Cubesat - The Surveyor (dart-shaped)
-                // Main body (3U = 10x10x30 cm)
+                // 3U Cubesat
                 const bodyGeometry = new THREE.BoxGeometry(0.5, 1.4, 0.5);
                 const bodyMaterial = new THREE.MeshPhongMaterial({
                     color: 0x2a2a3a,
@@ -1256,7 +1303,7 @@ function createSatellite(isPhysicist) {
                 const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
                 satelliteGroup.add(body);
                 
-                // Gold foil band
+                // Foil band
                 const foilGeometry = new THREE.BoxGeometry(0.52, 0.25, 0.52);
                 const foilMaterial = new THREE.MeshPhongMaterial({
                     color: 0xd4af37,
@@ -1267,9 +1314,8 @@ function createSatellite(isPhysicist) {
                 foil.position.y = 0.3;
                 satelliteGroup.add(foil);
                 
-                // Smaller deployable panels
+                // Panels (Using Texture)
                 const panelGeometry = new THREE.BoxGeometry(0.8, 0.6, 0.02);
-                const panelMaterial = solarPanelMaterial;
                 
                 [-1, 1].forEach(side => {
                     const panel = new THREE.Mesh(panelGeometry, panelMaterial);
@@ -1278,7 +1324,7 @@ function createSatellite(isPhysicist) {
                     satelliteGroup.add(panel);
                 });
                 
-                // Nose cone (aerodynamic)
+                // Nose cone
                 const coneGeometry = new THREE.ConeGeometry(0.25, 0.4, 4);
                 const coneMaterial = new THREE.MeshPhongMaterial({
                     color: 0x3a3a4a,
@@ -1290,7 +1336,7 @@ function createSatellite(isPhysicist) {
                 cone.rotation.y = Math.PI / 4;
                 satelliteGroup.add(cone);
                 
-                // Simple antenna
+                // Antenna
                 const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.3, 6);
                 const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
                 const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
@@ -1300,27 +1346,19 @@ function createSatellite(isPhysicist) {
             
             scene.add(satelliteGroup);
             
-            // Subtle grid floor
             const gridHelper = new THREE.GridHelper(4, 10, 0x222233, 0x111122);
             gridHelper.position.y = -1.5;
             gridHelper.material.opacity = 0.3;
             gridHelper.material.transparent = true;
             scene.add(gridHelper);
             
-            // Animation
             function animate() {
                 requestAnimationFrame(animate);
-                
-                // Slow rotation around Y axis
                 satelliteGroup.rotation.y += 0.005;
-                
-                // Gentle wobble
                 satelliteGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
-                
                 renderer.render(scene, camera);
             }
             
-            // Handle resize
             const resizeObserver = new ResizeObserver(() => {
                 const newWidth = container.clientWidth;
                 const newHeight = container.clientHeight;
@@ -1334,11 +1372,7 @@ function createSatellite(isPhysicist) {
             animate();
         }
         
-        // ============================================
-        // INITIALIZATION
-        // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Small delay to ensure containers are sized
             setTimeout(() => {
                 initConstellationView();
                 initSatelliteView('physicist-viewport', true);
