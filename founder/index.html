@@ -272,6 +272,30 @@
             margin-right: 0;
         }
 
+        /* Founder links social buttons */
+        .founder-links {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+        .founder-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        .founder-links a:hover {
+            color: var(--accent);
+        }
+        .founder-links svg {
+            width: 18px;
+            height: 18px;
+        }
+
         /* Publication list */
         .pub-list {
             margin-top: 1rem;
@@ -341,6 +365,22 @@
             <!-- Update the photo path: the image will be placed in this folder -->
             <img src="me_with_charlie.jpg" alt="Dr. Fadil Inceoglu" class="founder-photo">
             <p>Dr. Fadil Inceoglu is a physicist and machine‑learning researcher specialising in solar and magnetospheric physics. He earned his PhD in 2015 from Aarhus University, where he investigated long‑term solar variability using cosmogenic nuclides. After positions at Aarhus University, the Leibniz Institute for Astrophysics Potsdam and GFZ Potsdam, he joined NOAA’s National Centers for Environmental Information and CIRES at the University of Colorado Boulder as a research scientist. His work focuses on developing AI algorithms for space‑weather forecasting, correcting satellite magnetometer data, and understanding the solar–terrestrial relationship.</p>
+
+            <!-- Social links for the founder similar to the main site -->
+            <div class="founder-links">
+                <a href="https://www.linkedin.com/in/fadil-inceoglu/" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    LinkedIn
+                </a>
+                <a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&amp;hl=en&amp;oi=ao" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/>
+                    </svg>
+                    Google Scholar
+                </a>
+            </div>
         </div>
     </header>
 
