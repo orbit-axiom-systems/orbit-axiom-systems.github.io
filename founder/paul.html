@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orbit Axiom Systems | Dr. Paul Loto'aniu</title>
-    <meta name="description" content="Dr. Paul Loto'aniu - Co-Founder of Orbit Axiom Systems.">
+    <meta name="description" content="Dr. Paul Loto'aniu - Co-Founder & Chief Scientist of Orbit Axiom Systems. 15+ years leading instrument development and operations on NASA-NOAA space weather missions.">
 
     <!-- Google Fonts: same fonts used on the main site -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,6 +153,11 @@
             font-size: clamp(2rem, 4vw, 3rem);
             margin-bottom: 0.75rem;
         }
+        h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
         h3 {
             font-size: 1.25rem;
             margin-bottom: 0.25rem;
@@ -183,10 +188,6 @@
             text-align: center;
             background: radial-gradient(circle at 50% 20%, var(--accent-glow), transparent);
             border-bottom: 1px solid var(--border);
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .hero-title {
             color: var(--accent);
@@ -195,6 +196,12 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
         }
         .founder-photo {
             width: 180px;
@@ -228,20 +235,147 @@
             height: 18px;
         }
 
-        .under-construction {
-            margin-top: 2rem;
-            padding: 1.5rem 2rem;
-            background: var(--bg-secondary);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            display: inline-block;
+        /* Main content sections */
+        main.container section {
+            margin-bottom: 4rem;
         }
 
-        .under-construction p {
+        /* Nuggets grid for cards */
+        .nuggets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nugget-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .nugget-card:hover {
+            border-color: var(--accent-dim);
+            transform: translateY(-2px);
+        }
+        .nugget-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        .nugget-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .nugget-card .citation {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        .nugget-card .links {
+            margin-top: 1rem;
+        }
+        .doi-link {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: var(--accent-dim);
+            color: var(--text-primary);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        .doi-link:hover {
+            background: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Awards list */
+        .awards-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .awards-list li {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .awards-list .award-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .awards-list .award-content h4 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .awards-list .award-content p {
+            font-size: 0.9rem;
             color: var(--text-muted);
             margin: 0;
-            font-family: 'Space Mono', monospace;
+        }
+
+        /* Funding section */
+        .funding-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .funding-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .funding-card .amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .funding-card .role {
             font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .funding-card .description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Publications list */
+        .pub-list h3 {
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .pub-list ul {
+            list-style: none;
+        }
+        .pub-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+        .pub-list li:last-child {
+            border-bottom: none;
+        }
+        .pub-list em {
+            color: var(--text-muted);
         }
 
         /* Footer */
@@ -255,7 +389,7 @@
     </style>
 </head>
 <body>
-    <!-- Navigation bar copied from the main site -->
+    <!-- Navigation bar -->
     <nav>
         <a href="../index.html" class="logo">
             <img src="../ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems">
@@ -276,13 +410,16 @@
         </ul>
     </nav>
 
-    <!-- Hero section -->
     <header class="hero">
         <div class="container">
-            <div class="hero-title">Co-Founder & Chief Scientist</div>
+            <div class="hero-title">Co-Founder &amp; Chief Scientist</div>
+            <h1>15+ Years Leading NASA-NOAA Space Weather Missions</h1>
+            <p class="hero-subtitle">Dr. Paul Loto'aniu brings operational space mission experience from concept through deployment, having led magnetometer hardware development and calibration for the GOES-R constellation and DSCOVR missions currently protecting critical infrastructure.</p>
             <img src="../paul.png" alt="Dr. Paul Loto'aniu" class="founder-photo">
             <h3 style="margin-top: 1rem; margin-bottom: 1.5rem;">Dr. Paul Loto'aniu</h3>
+            <p>Dr. Paul Loto'aniu is Co-Founder and Chief Scientist, bringing 15+ years of operational space mission experience from NASA and NOAA. As lead instrument scientist and team lead for the GOES-R constellation and DSCOVR missions, he managed magnetometer hardware development from concept through operational deployment, securing over $2.3M in direct funding. His expertise spans instrument calibration, operational data validation, and applying machine learning to space-based measurements. Paul has led cross-functional teams through multiple full mission lifecycles and received NASA's Highest Group Achievement Award and NOAA's Gold Medal for mission excellence.</p>
 
+            <!-- Social links -->
             <div class="founder-links">
                 <a href="https://www.linkedin.com/in/dr-paul-lotoaniu-b49582340/" target="_blank" rel="noopener">
                     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -291,19 +428,163 @@
                     LinkedIn
                 </a>
             </div>
-
-            <div class="under-construction">
-                <p>Under Construction</p>
-            </div>
         </div>
     </header>
 
+    <main class="container">
+        <!-- Mission Leadership Roles -->
+        <section>
+            <h2>Mission Leadership Roles</h2>
+            <div class="nuggets-grid">
+                <article class="nugget-card">
+                    <h3>GOES-R Constellation Lead</h3>
+                    <p>Lead of magnetic fields team for the GOES-R series (GOES-16, 17, 18), managing magnetometer operations from hardware development through on-orbit calibration to operational data products. The GOES-R constellation provides critical real-time space weather monitoring for NOAA's Space Weather Prediction Center.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>DSCOVR Mission Lead</h3>
+                    <p>Lead instrument scientist for DSCOVR's magnetometer at the L1 Lagrange point, providing 15-60 minute advance warning of solar wind conditions arriving at Earth. Managed validation and calibration ensuring operational data quality for space weather forecasting.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>SWFO-L1 Mission</h3>
+                    <p>Lead of magnetic fields team for the upcoming Space Weather Follow-On L1 mission, continuing the critical solar wind monitoring capability. Overseeing instrument development and pre-launch calibration activities.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>Vector Helium Magnetometer PI</h3>
+                    <p>Principal Investigator and Project Manager for $2.3M NOAA/NASA-JPL Vector Helium Magnetometer development program, advancing next-generation magnetometer technology for future space weather missions.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>NASA Mission Concept Studies</h3>
+                    <p>Instrument scientist on multiple NASA mission concept studies including Solar Sail, SEMPRES, and ORB missions, contributing magnetometer expertise to future heliophysics mission designs.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Operational Deployment Experience -->
+        <section>
+            <h2>Operational Deployment Experience</h2>
+            <div class="nuggets-grid">
+                <article class="nugget-card">
+                    <h3>GOES-R Constellation (2016-Present)</h3>
+                    <p>GOES-16, 17, and 18 are currently operational, providing continuous geosynchronous magnetic field measurements. Managed full lifecycle from hardware development, through launch and commissioning, to operational product delivery used by forecasters worldwide.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>DSCOVR L1 Monitoring (2015-Present)</h3>
+                    <p>Deep Space Climate Observatory provides operational solar wind monitoring at the L1 point. Led magnetometer calibration and validation ensuring data quality for NOAA's real-time space weather products and alerts.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>Galaxy 15 Anomaly Investigation</h3>
+                    <p>Led investigation into the Galaxy 15 commercial spacecraft anomaly, applying magnetospheric physics expertise to understand space weather impacts on commercial satellite operations. Demonstrated commercial relevance of space weather research.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Awards & Recognition -->
+        <section>
+            <h2>Awards &amp; Recognition</h2>
+            <ul class="awards-list">
+                <li>
+                    <span class="award-icon">🥇</span>
+                    <div class="award-content">
+                        <h4>NOAA Gold Medal (2018)</h4>
+                        <p>Highest NOAA honor for GOES-16/17 spacecraft development and successful deployment</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="award-icon">🏆</span>
+                    <div class="award-content">
+                        <h4>NASA Highest Group Achievement Award (2017)</h4>
+                        <p>Recognition for exceptional contributions to NASA mission success</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="award-icon">⭐</span>
+                    <div class="award-content">
+                        <h4>Multiple NOAA Operational Excellence Awards</h4>
+                        <p>Consistent recognition for delivering high-quality operational space weather products</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Funding Track Record -->
+        <section>
+            <h2>Funding Track Record</h2>
+            <div class="funding-grid">
+                <div class="funding-card">
+                    <div class="amount">$2.3M</div>
+                    <div class="role">Principal Investigator</div>
+                    <p class="description">NOAA-NASA/JPL Vector Helium Magnetometer development program</p>
+                </div>
+                <div class="funding-card">
+                    <div class="amount">$500K+</div>
+                    <div class="role">Co-Investigator Lead</div>
+                    <p class="description">GOES-R/SWFO mission support and instrument development</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selected Publications -->
+        <section>
+            <h2>Selected Publications</h2>
+            <div class="nuggets-grid">
+                <article class="nugget-card">
+                    <h3>DSCOVR Magnetometer Validation (2022)</h3>
+                    <p class="citation"><strong>Full citation:</strong> Loto'aniu, P. T. M., et al., 2022, DSCOVR magnetometer validation and operational products.</p>
+                    <p>Comprehensive validation of DSCOVR magnetometer data quality and calibration, establishing the operational baseline for L1 solar wind monitoring used in space weather forecasting.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>GOES-16 Magnetometer Instrument (2019)</h3>
+                    <p class="citation"><strong>Full citation:</strong> Loto'aniu, P. T. M., et al., 2019, GOES-16 magnetometer instrument paper.</p>
+                    <p>Technical description of the GOES-16 magnetometer instrument design, on-orbit performance, and calibration methodology. Establishes the foundation for operational geosynchronous magnetic field measurements.</p>
+                </article>
+                <article class="nugget-card">
+                    <h3>Galaxy 15 Spacecraft Anomaly (2015)</h3>
+                    <p class="citation"><strong>Full citation:</strong> Loto'aniu, P. T. M., et al., 2015, Galaxy 15 spacecraft anomaly investigation.</p>
+                    <p>Investigation into space weather impacts on the Galaxy 15 commercial communications satellite, demonstrating the operational relevance of magnetospheric physics research to commercial space operations.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Complete Publications List -->
+        <section>
+            <h2>Complete Publications List</h2>
+            <p>A selection of Dr. Loto'aniu's 50+ peer-reviewed publications spanning magnetospheric physics, spacecraft instrumentation, and space weather operations.</p>
+            <div class="pub-list">
+                <h3>2025</h3>
+                <ul>
+                    <li>Inceoglu, F., Loto'aniu, P. T. M., 2025, Occurrence characteristics and amplitude-frequency relationship of the Pc5 ULF waves from 3 decades of GOES data, <em>Scientific Reports</em>, 15, Article number: 3666. <a href="https://doi.org/10.1038/s41598-025-20474-z">DOI</a></li>
+                    <li>Inceoglu, F., Loto'aniu, P. T. M., 2025, Utilizing XGBoosts to correct arcjet contamination in magnetic-field measurements from GOES missions, <em>Frontiers in Artificial Intelligence</em>, 8. <a href="https://doi.org/10.3389/frai.2025.1628029">DOI</a></li>
+                </ul>
+                <h3>2024</h3>
+                <ul>
+                    <li>Loto'aniu P. T. M., Inceoglu, F., 2024, The distribution of Pc5 ultralow-frequency waves at geostationary orbit, <em>The Astrophysical Journal</em>, 969, 91. <a href="https://doi.org/10.3847/1538-4357/ad41dd">DOI</a></li>
+                </ul>
+                <h3>2023</h3>
+                <ul>
+                    <li>Loto'aniu, P. T. M., Davis, A., Jarvis, A., Grotenhuis, M., Rich, F. J., Califf, S., Inceoglu, F., Pacini, A., Singer, H. J., 2023, Initial on-orbit results from the GOES-18 spacecraft science magnetometer, <em>Space Science Reviews</em>, 219, 84. <a href="https://doi.org/10.1007/s11214-023-01032-3">DOI</a></li>
+                    <li>Inceoglu, F., Loto'aniu, P. T. M., 2023, Detection of solar QBO-like signals in Earth's magnetic field from multi-GOES mission data, <em>Scientific Reports</em>, 13:19460. <a href="https://doi.org/10.1038/s41598-023-46902-6">DOI</a></li>
+                    <li>Loto'aniu, P. T. M., Mulligan, P., Johnson, L., Biesecker, D., Steenburgh, R., Pizzo, V., Inceoglu, F., Rodriguez, H., 2023, Solar sail missions for sub-L1 sampling of the interplanetary magnetic field and plasma on the Sun-Earth line, <em>Bulletin of the American Astronomical Society</em>, 55(3). <a href="https://doi.org/10.3847/25c2cfeb.4e76adf3">DOI</a></li>
+                </ul>
+                <h3>2022</h3>
+                <ul>
+                    <li>Inceoglu, F., Pacini, A. A., Loto'aniu, P. T. M., 2022, Utilizing AI to unveil the nonlinear interplay of convection, drift, and diffusion on galactic cosmic-ray modulation in the inner heliosphere, <em>Scientific Reports</em>, 12:20712. <a href="https://doi.org/10.1038/s41598-022-25277-0">DOI</a></li>
+                    <li>Inceoglu, F., Howe, R., Loto'aniu, P. T. M., 2022, Causal interaction between the subsurface rotation-rate residuals and radial magnetic field at different timescales, <em>The Astrophysical Journal</em>, 925(2), 170. <a href="https://doi.org/10.3847/1538-4357/ac4096">DOI</a></li>
+                </ul>
+                <h3>2021</h3>
+                <ul>
+                    <li>Inceoglu, F., Loto'aniu, P. T. M., 2021, Using unsupervised and supervised machine-learning methods to correct offset anomalies in the GOES-16 magnetometer data, <em>Space Weather</em>, 19(12), e02892. <a href="https://doi.org/10.1029/2021SW002892">DOI</a></li>
+                    <li>Inceoglu, F., Howe, R., Loto'aniu, P. T. M., 2021, The QBO-type signals in the subsurface flow fields during solar cycles 23 and 24, <em>The Astrophysical Journal</em>, 920:49. <a href="https://doi.org/10.3847/1538-4357/ac16de">DOI</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
     <footer>
-        © 2026 Orbit Axiom Systems. All rights reserved.
+        &copy; 2026 Orbit Axiom Systems. All rights reserved.
     </footer>
 
     <script>
-        // Hamburger Menu Logic (copied from the main site)
+        // Hamburger Menu Logic
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
         if (hamburger) {
