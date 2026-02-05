@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-02-05T18:00:00",
+  "timestamp": "2026-02-05T19:00:00",
   "coronal_holes": 1,
   "active_regions": 9,
-  "ch_area_pixels": 16765,
-  "ar_area_pixels": 27350,
-  "published_at": "2026-02-05T18:36:03.321136Z"
+  "ch_area_pixels": 16567,
+  "ar_area_pixels": 27555,
+  "published_at": "2026-02-05T19:36:00.594467Z"
 }
