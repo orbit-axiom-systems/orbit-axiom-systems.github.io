@@ -434,6 +434,8 @@
         #groundtrack-canvas {
             display: block;
             width: 100%;
+            height: auto;
+            aspect-ratio: 2 / 1; /* keeps the map visible/responsive */
         }
 
         .gt-legend {
@@ -723,10 +725,10 @@
             },
             planes: [
                 { raan: 0,   inclination: 97 },
-                { raan: 50,  inclination: 87 },
-                { raan: 115, inclination: 87 },
+                { raan: 50,  inclination: 97 },
+                { raan: 115, inclination: 97 },
                 { raan: 180, inclination: 97 },
-                { raan: 250, inclination: 85 }
+                { raan: 250, inclination: 97 }
             ],
             physicistColor: 0x00d4aa,
             surveyorColor: 0xff9f43,
@@ -1012,90 +1014,204 @@
         // ============================================
         // SATELLITE PANEL VIEWS
         // ============================================
-        function initSatelliteView(containerId, isPhysicist) {
+        
+        function initSatelliteView(containerId, isPhysicist, _attempt = 0) {
             const container = document.getElementById(containerId);
             const loadingId = containerId.replace('-viewport', '-loading');
             const loading = document.getElementById(loadingId);
-            const width = container.clientWidth, height = container.clientHeight;
-            
+            if (!container) return;
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // If layout isn't ready yet, retry a few times.
+            if (width < 10 || height < 10) {
+                if (_attempt < 12) {
+                    setTimeout(() => initSatelliteView(containerId, isPhysicist, _attempt + 1), 120);
+                } else if (typeof _setLoadingMessage === 'function') {
+                    _setLoadingMessage(loadingId, 'Panel layout not ready (0×0).');
+                }
+                return;
+            }
+
+            // Remove any existing canvases (avoid stacking on retries)
+            container.querySelectorAll('canvas').forEach(c => c.remove());
+
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
-            camera.position.set(0, 0, 4);
-            
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            // Subtle background so the dark satellite is always visible
+            scene.background = new THREE.Color(0x0b1020);
+
+            const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
+            camera.position.set(0.25, 0.15, 4.3);
+            camera.lookAt(0, 0.2, 0);
+
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: 'high-performance'
+                });
+            } catch (e) {
+                console.error(e);
+                if (typeof _setLoadingMessage === 'function') _setLoadingMessage(loadingId, 'WebGL init failed.');
+                return;
+            }
+
             renderer.setSize(width, height);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setClearColor(0x000000, 0);
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+            renderer.domElement.style.display = 'block';
             container.appendChild(renderer.domElement);
-            
-            scene.add(new THREE.AmbientLight(0x404060, 0.6));
-            const keyLight = new THREE.DirectionalLight(0xffffff, 1);
-            keyLight.position.set(5, 5, 5);
-            scene.add(keyLight);
+
+            // Handle context loss gracefully
+            renderer.domElement.addEventListener('webglcontextlost', (e) => {
+                e.preventDefault();
+                console.warn('WebGL context lost in', containerId);
+                if (typeof _setLoadingMessage === 'function') _setLoadingMessage(loadingId, 'WebGL context lost (try reload).');
+            }, false);
+
             const accentHex = isPhysicist ? 0x00d4aa : 0xff9f43;
-            const fillLight = new THREE.DirectionalLight(accentHex, 0.4);
-            fillLight.position.set(-3, 0, 3);
+
+            // Lighting: bright, high-contrast, and a rim light
+            scene.add(new THREE.HemisphereLight(0xd8f0ff, 0x070a12, 0.9));
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.25);
+            keyLight.position.set(6, 8, 9);
+            scene.add(keyLight);
+            const rimLight = new THREE.DirectionalLight(accentHex, 0.85);
+            rimLight.position.set(-7, 1, -5);
+            scene.add(rimLight);
+            const fillLight = new THREE.PointLight(0x4a9eff, 0.6, 30);
+            fillLight.position.set(0, -2, 4);
             scene.add(fillLight);
-            scene.add(Object.assign(new THREE.DirectionalLight(0x4a9eff, 0.3), { position: new THREE.Vector3(0, -3, -3) }));
-            
+
+            // Satellite model (brighter materials vs dark panel background)
             const satelliteGroup = new THREE.Group();
             const panelMaterial = getSolarPanelMaterial();
-            
-            // 6U body
-            satelliteGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.6, 0.5),
-                new THREE.MeshPhongMaterial({ color: 0x2a2a3a, specular: 0x444444, shininess: 30 })));
-            // Gold foil
-            const foilMat = new THREE.MeshPhongMaterial({ color: 0xd4af37, specular: 0xffffff, shininess: 80 });
-            const f1 = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.3, 0.52), foilMat); f1.position.y = 0.5; satelliteGroup.add(f1);
-            const f2 = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.3, 0.52), foilMat); f2.position.y = -0.5; satelliteGroup.add(f2);
+
+            const bodyMat = new THREE.MeshPhongMaterial({
+                color: 0x3a3a4d,
+                specular: 0x7a7a8a,
+                shininess: 55,
+                emissive: accentHex,
+                emissiveIntensity: 0.14
+            });
+
+            satelliteGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.6, 0.5), bodyMat));
+
+            const foilMat = new THREE.MeshPhongMaterial({
+                color: 0xd4af37,
+                specular: 0xffffff,
+                shininess: 95,
+                emissive: 0x332200,
+                emissiveIntensity: 0.18
+            });
+
+            const f1 = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.3, 0.52), foilMat);
+            f1.position.y = 0.5; satelliteGroup.add(f1);
+            const f2 = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.3, 0.52), foilMat);
+            f2.position.y = -0.5; satelliteGroup.add(f2);
+
             // Solar panels
             [-1, 1].forEach(side => {
                 const p = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 0.03), panelMaterial);
                 p.position.x = side * 1.15;
                 satelliteGroup.add(p);
             });
+
             // Boom + sensor
-            const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.2, 8), new THREE.MeshPhongMaterial({ color: 0x888888 }));
+            const boom = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.02, 0.02, 1.2, 10),
+                new THREE.MeshPhongMaterial({ color: 0x9a9aa8, specular: 0xffffff, shininess: 60 })
+            );
             boom.position.y = 1.4; satelliteGroup.add(boom);
-            const sensor = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), new THREE.MeshPhongMaterial({ color: 0xcccccc, specular: 0xffffff, shininess: 100 }));
+
+            const sensor = new THREE.Mesh(
+                new THREE.SphereGeometry(0.08, 20, 20),
+                new THREE.MeshPhongMaterial({ color: 0xd6d6df, specular: 0xffffff, shininess: 120 })
+            );
             sensor.position.y = 2; satelliteGroup.add(sensor);
+
             // Ram inlet
-            const inlet = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.1, 16), new THREE.MeshPhongMaterial({ color: 0x444455, specular: 0x666677, shininess: 50 }));
-            inlet.rotation.x = Math.PI / 2; inlet.position.set(0, 0.3, 0.3); satelliteGroup.add(inlet);
+            const inlet = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.12, 0.15, 0.1, 20),
+                new THREE.MeshPhongMaterial({ color: 0x4a4a5c, specular: 0x9a9aad, shininess: 70 })
+            );
+            inlet.rotation.x = Math.PI / 2;
+            inlet.position.set(0, 0.3, 0.3);
+            satelliteGroup.add(inlet);
+
             // Antennas
-            const antMat = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
-            const a1 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 6), antMat);
+            const antMat = new THREE.MeshPhongMaterial({ color: 0xb0b0bf, specular: 0xffffff, shininess: 70 });
+            const a1 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 8), antMat);
             a1.position.set(0.3, -0.9, 0.2); a1.rotation.x = 0.3; satelliteGroup.add(a1);
-            const a2 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 6), antMat);
+            const a2 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 8), antMat);
             a2.position.set(-0.3, -0.9, 0.2); a2.rotation.x = 0.3; satelliteGroup.add(a2);
-            // Glow
-            satelliteGroup.add(new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16),
-                new THREE.MeshBasicMaterial({ color: accentHex, transparent: true, opacity: 0.5 })));
-            
+
+            // Accent glow
+            const glow = new THREE.Mesh(
+                new THREE.SphereGeometry(0.06, 18, 18),
+                new THREE.MeshBasicMaterial({ color: accentHex, transparent: true, opacity: 0.65 })
+            );
+            glow.position.set(0, 0.1, 0.28);
+            satelliteGroup.add(glow);
+
+            satelliteGroup.position.y = 0.1;
+            satelliteGroup.rotation.y = 0.6;
+            satelliteGroup.rotation.x = 0.15;
             scene.add(satelliteGroup);
-            
-            const gridHelper = new THREE.GridHelper(4, 10, 0x222233, 0x111122);
+
+            // Subtle "floor" to give depth
+            const floor = new THREE.Mesh(
+                new THREE.CircleGeometry(3.6, 64),
+                new THREE.MeshBasicMaterial({ color: 0x0f1730, transparent: true, opacity: 0.55 })
+            );
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -1.55;
+            scene.add(floor);
+
+            const gridHelper = new THREE.GridHelper(4, 10, 0x2a3456, 0x151b2c);
             gridHelper.position.y = -1.5;
-            gridHelper.material.opacity = 0.3; gridHelper.material.transparent = true;
+            gridHelper.material.opacity = 0.35;
+            gridHelper.material.transparent = true;
             scene.add(gridHelper);
-            
+
+            // Optional drag rotate
+            let isDragging = false;
+            let lastX = 0, lastY = 0;
+            container.addEventListener('mousedown', (e) => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - lastX;
+                const dy = e.clientY - lastY;
+                satelliteGroup.rotation.y += dx * 0.01;
+                satelliteGroup.rotation.x = Math.max(-0.7, Math.min(0.7, satelliteGroup.rotation.x + dy * 0.01));
+                lastX = e.clientX; lastY = e.clientY;
+            });
+            container.addEventListener('mouseup', () => isDragging = false);
+            container.addEventListener('mouseleave', () => isDragging = false);
+
             function animate() {
                 requestAnimationFrame(animate);
-                satelliteGroup.rotation.y += 0.005;
-                satelliteGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                satelliteGroup.rotation.y += 0.004;
+                satelliteGroup.rotation.x = 0.12 + Math.sin(Date.now() * 0.001) * 0.08;
                 renderer.render(scene, camera);
             }
-            
+
             new ResizeObserver(() => {
                 const w = container.clientWidth, h = container.clientHeight;
+                if (w < 10 || h < 10) return;
                 camera.aspect = w / h;
                 camera.updateProjectionMatrix();
                 renderer.setSize(w, h);
             }).observe(container);
-            
+
             if (loading) loading.style.display = 'none';
             animate();
         }
+
 
         // ============================================
         // 2D GROUND TRACK MAP
@@ -1133,30 +1249,41 @@
                 return [((lon + 180) / 360) * GT_W, ((90 - lat) / 180) * GT_H];
             }
 
+            
             // Compute ground track for one satellite
-            function computeGroundTrack(inclDeg, raanDeg, initialPhaseDeg, periodMin, durationMin) {
+            function computeGroundTrack(inclDeg, raanDeg, initialPhaseDeg, periodMin, durationMin, timeOffsetMin = 0) {
                 const inc = inclDeg * Math.PI / 180;
                 const raan0 = raanDeg * Math.PI / 180;
                 const phase0 = initialPhaseDeg * Math.PI / 180;
                 const earthRotRate = 360 / (24 * 60); // deg/min
-                const orbRate = 360 / periodMin; // deg/min
+                const orbRate = 360 / periodMin;      // deg/min
                 const points = [];
                 for (let t = 0; t < durationMin; t += 0.4) {
-                    const nu = phase0 + orbRate * t * Math.PI / 180;
+                    const tAbs = t + timeOffsetMin;
+
+                    // True anomaly (simplified circular orbit)
+                    const nu = phase0 + (orbRate * tAbs) * Math.PI / 180;
                     const xOrb = Math.cos(nu), yOrb = Math.sin(nu);
-                    // Rotate by inclination
-                    const xi = xOrb, yi = yOrb * Math.cos(inc), zi = yOrb * Math.sin(inc);
-                    // Rotate by RAAN
+
+                    // Rotate by inclination (orbit plane -> ECI)
+                    const xi = xOrb;
+                    const yi = yOrb * Math.cos(inc);
+                    const zi = yOrb * Math.sin(inc);
+
+                    // Rotate by RAAN (about +Z)
                     const xECI = xi * Math.cos(raan0) - yi * Math.sin(raan0);
                     const yECI = xi * Math.sin(raan0) + yi * Math.cos(raan0);
                     const zECI = zi;
-                    // Earth rotation
-                    const earthRot = earthRotRate * t * Math.PI / 180;
+
+                    // Earth rotation: ECI -> ECEF (about +Z)
+                    const earthRot = (earthRotRate * tAbs) * Math.PI / 180;
                     const xGeo = xECI * Math.cos(earthRot) + yECI * Math.sin(earthRot);
                     const yGeo = -xECI * Math.sin(earthRot) + yECI * Math.cos(earthRot);
+
                     const lat = Math.asin(zECI) * 180 / Math.PI;
                     const lon = Math.atan2(yGeo, xGeo) * 180 / Math.PI;
-                    points.push({ lon, lat, t });
+
+                    points.push({ lon, lat, t: tAbs });
                 }
                 return points;
             }
@@ -1217,12 +1344,12 @@
             }
 
             // Animation state
-            let gtTime = 0;
+            let gtTimeMin = 0;
             const trailDuration = 200; // minutes of trail to show
 
             function drawFrame() {
                 requestAnimationFrame(drawFrame);
-                gtTime += 0.12;
+                gtTimeMin += 0.12;
 
                 drawBackground();
 
@@ -1234,8 +1361,8 @@
                             const initialPhase = (s / GT_SATS_PER_PLANE) * 360 + planeIdx * 36;
                             const track = computeGroundTrack(
                                 plane.inclination, plane.raan,
-                                initialPhase + gtTime,
-                                shell.period, trailDuration
+                                initialPhase,
+                                shell.period, trailDuration, gtTimeMin
                             );
 
                             // Draw trail with progressive opacity
@@ -1295,14 +1422,69 @@
         // ============================================
         // INIT
         // ============================================
+        
+        // ============================================
+        // INIT (robust: don't let 3D failures block 2D)
+        // ============================================
+        function _setLoadingMessage(loadingId, message) {
+            const el = document.getElementById(loadingId);
+            if (!el) return;
+            const spinner = el.querySelector('.loading-spinner');
+            const label = el.querySelector('span');
+            if (spinner) spinner.style.display = 'none';
+            if (label) label.textContent = message;
+        }
+
+        function _safe(fn, onError) {
+            try { fn(); return true; }
+            catch (e) { console.error(e); if (onError) onError(e); return false; }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize 2D map first (works even if WebGL / Three.js fails).
+            _safe(initGroundTrackMap, () => {
+                const canvas = document.getElementById('groundtrack-canvas');
+                if (canvas && canvas.parentElement) {
+                    const overlay = document.createElement('div');
+                    overlay.style.position = 'absolute';
+                    overlay.style.inset = '0';
+                    overlay.style.display = 'grid';
+                    overlay.style.placeItems = 'center';
+                    overlay.style.color = 'var(--text-muted)';
+                    overlay.style.background = 'rgba(10,10,15,0.65)';
+                    overlay.style.fontFamily = '"Space Mono", monospace';
+                    overlay.style.fontSize = '12px';
+                    overlay.style.letterSpacing = '0.06em';
+                    overlay.textContent = 'Ground track failed to initialize — check the browser console.';
+                    canvas.parentElement.appendChild(overlay);
+                }
+            });
+
+            // Give layout a beat so clientWidth/clientHeight are non-zero.
             setTimeout(() => {
-                initConstellationView();
-                initSatelliteView('physicist-viewport', true);
-                initSatelliteView('surveyor-viewport', false);
-                initGroundTrackMap();
-            }, 100);
+                // If Three.js didn't load (CSP / adblock / network), show a helpful message.
+                if (!window.THREE || !THREE.WebGLRenderer) {
+                    _setLoadingMessage('constellation-loading', '3D view blocked (Three.js not loaded). Check CSP / adblock / script loading.');
+                    _setLoadingMessage('physicist-loading', '3D view blocked (Three.js not loaded).');
+                    _setLoadingMessage('surveyor-loading', '3D view blocked (Three.js not loaded).');
+                    return;
+                }
+
+                // If WebGL is unavailable, don't spin forever.
+                const testCanvas = document.createElement('canvas');
+                const hasWebGL = !!(testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl'));
+                if (!hasWebGL) {
+                    _setLoadingMessage('constellation-loading', 'WebGL unavailable in this browser/device.');
+                    _setLoadingMessage('physicist-loading', 'WebGL unavailable in this browser/device.');
+                    _setLoadingMessage('surveyor-loading', 'WebGL unavailable in this browser/device.');
+                    return;
+                }
+
+                _safe(initConstellationView, () => _setLoadingMessage('constellation-loading', '3D constellation failed — open console.'));
+                _safe(() => initSatelliteView('physicist-viewport', true), () => _setLoadingMessage('physicist-loading', '3D model failed — open console.'));
+                _safe(() => initSatelliteView('surveyor-viewport', false), () => _setLoadingMessage('surveyor-loading', '3D model failed — open console.'));
+            }, 120);
         });
-    </script>
+</script>
 </body>
 </html>
