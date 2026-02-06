@@ -44,7 +44,7 @@
             overflow-x: hidden;
         }
 
-        /* --- NAVIGATION (Added) --- */
+        /* --- NAVIGATION --- */
         nav {
             position: fixed;
             top: 0;
@@ -149,7 +149,6 @@
         
         .atlas-section {
             min-height: 100vh;
-            /* Increased top padding to clear the fixed header */
             padding: 8rem 2rem 4rem; 
             position: relative;
             overflow: hidden;
@@ -283,12 +282,6 @@
             margin-bottom: 0.25rem;
         }
         
-        .panel-form-factor {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
         .satellite-viewport {
             flex: 1;
             min-height: 250px;
@@ -342,9 +335,8 @@
         }
         
         .panel-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
+            display: flex;
+            justify-content: center;
             margin-top: 1rem;
             padding-top: 1rem;
             border-top: 1px solid var(--border);
@@ -542,15 +534,15 @@
         <div class="section-header">
             <span class="section-tag">The Constellation</span>
             <h2 class="section-title">Atlas Grid Architecture</h2>
-            <p class="section-subtitle">30 satellites across 3 altitude shells and 4 orbital planes. Direct measurement infrastructure for global thermospheric density.</p>
+            <p class="section-subtitle">30 satellites across 3 altitude shells and 5 near-polar orbital planes. Direct measurement infrastructure for global thermospheric density.</p>
         </div>
         
         <div class="constellation-dashboard">
+            <!-- PHYSICIST PANEL (Left) -->
             <div class="satellite-panel physicist">
                 <div class="panel-header">
                     <span class="panel-badge">6U Cubesat</span>
                     <h3 class="panel-title">The Physicist</h3>
-                    <span class="panel-form-factor">Anchor Class</span>
                 </div>
                 <div class="satellite-viewport" id="physicist-viewport">
                     <div class="loading-indicator" id="physicist-loading">
@@ -573,14 +565,11 @@
                             <div class="stat-value">6</div>
                             <div class="stat-label">Satellites</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value">12kg</div>
-                            <div class="stat-label">Mass</div>
-                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- CONSTELLATION MAIN VIEW (Center) -->
             <div class="constellation-main">
                 <div class="constellation-viewport" id="constellation-viewport">
                     <div class="loading-indicator" id="constellation-loading">
@@ -592,14 +581,14 @@
                 <div class="constellation-legend">
                     <div class="legend-title">Legend</div>
                     <div class="legend-item"><span class="legend-dot physicist"></span> Physicist (6U)</div>
-                    <div class="legend-item"><span class="legend-dot surveyor"></span> Surveyor (3U)</div>
+                    <div class="legend-item"><span class="legend-dot surveyor"></span> Surveyor (6U)</div>
                     <div class="legend-item"><span class="legend-dot shell-a"></span> Shell A: 350 km</div>
                     <div class="legend-item"><span class="legend-dot shell-b"></span> Shell B: 450 km</div>
                     <div class="legend-item"><span class="legend-dot shell-c"></span> Shell C: 550 km</div>
                     <div class="legend-item"><span class="legend-line"></span> Orbital Plane</div>
                 </div>
                 
-                <div class="controls-hint">Drag to rotate • Scroll to zoom</div>
+                <div class="controls-hint">Drag to rotate · Scroll to zoom</div>
                 
                 <div class="constellation-overlay">
                     <div class="overlay-stats">
@@ -608,7 +597,7 @@
                             <div class="overlay-stat-label">Total Satellites</div>
                         </div>
                         <div class="overlay-stat">
-                            <div class="overlay-stat-value">4</div>
+                            <div class="overlay-stat-value">5</div>
                             <div class="overlay-stat-label">Orbital Planes</div>
                         </div>
                         <div class="overlay-stat">
@@ -623,11 +612,11 @@
                 </div>
             </div>
             
+            <!-- SURVEYOR PANEL (Right) -->
             <div class="satellite-panel surveyor">
                 <div class="panel-header">
-                    <span class="panel-badge">3U Cubesat</span>
+                    <span class="panel-badge">6U Cubesat</span>
                     <h3 class="panel-title">The Surveyor</h3>
-                    <span class="panel-form-factor">Drag Chip Class</span>
                 </div>
                 <div class="satellite-viewport" id="surveyor-viewport">
                     <div class="loading-indicator" id="surveyor-loading">
@@ -646,10 +635,6 @@
                         <div class="stat-item">
                             <div class="stat-value">24</div>
                             <div class="stat-label">Satellites</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">5kg</div>
-                            <div class="stat-label">Mass</div>
                         </div>
                     </div>
                 </div>
@@ -721,7 +706,7 @@
         function getSolarPanelMaterial() {
             if (!_sharedSolarMaterial) {
                 const tex = createSolarCellTexture(512, 12);
-                tex.anisotropy = 4; // Better quality at angles
+                tex.anisotropy = 4;
                 
                 _sharedSolarMaterial = new THREE.MeshPhongMaterial({
                     map: tex,
@@ -739,7 +724,13 @@
         // Utility: Degrees to Radians
         const deg2rad = (deg) => deg * Math.PI / 180;
 
-        // Configuration
+        // ============================================
+        // CONSTELLATION CONFIGURATION
+        // ============================================
+        // 5 near-polar planes with RAANs spread for local solar time
+        // diversity. All high-inclination (85-97°) for full latitude
+        // coverage including polar thermospheric dynamics.
+        // ============================================
         const CONFIG = {
             earthRadius: 6371, // km
             shells: {
@@ -748,10 +739,11 @@
                 C: { altitude: 550, color: 0x4a9eff, opacity: 0.05 }
             },
             planes: [
-                { raan: 0, inclination: 97.6 },    // SSO
-                { raan: 90, inclination: 97.6 },   // SSO
-                { raan: 180, inclination: 92 },    // High-inc non-SSO
-                { raan: 270, inclination: 65 }     // Mid-inc
+                { raan: 0,   inclination: 97 },   // SSO — dawn/dusk reference
+                { raan: 50,  inclination: 87 },   // Near-polar
+                { raan: 115, inclination: 87 },   // Near-polar
+                { raan: 180, inclination: 97 },   // SSO — noon/midnight reference
+                { raan: 250, inclination: 85 }    // Near-polar
             ],
             physicistColor: 0x00d4aa,
             surveyorColor: 0xff9f43,
@@ -772,9 +764,9 @@
             // Scene
             const scene = new THREE.Scene();
             
-            // Camera - POSITION UPDATED: Lower Y for equator view
+            // Camera — equatorial viewpoint
             const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.set(20, 2, 20); // Was (15, 8, 15)
+            camera.position.set(20, 2, 20);
             camera.lookAt(0, 0, 0);
             
             // Renderer
@@ -789,18 +781,17 @@
             scene.add(ambientLight);
             
             const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            sunLight.position.set(50, 20, 50); // Lowered slightly
+            sunLight.position.set(50, 20, 50);
             scene.add(sunLight);
             
             const fillLight = new THREE.DirectionalLight(0x4a9eff, 0.3);
             fillLight.position.set(-30, -10, -30);
             scene.add(fillLight);            
             
-            // Earth (textured)
+            // Earth
             const earthGeometry = new THREE.SphereGeometry(CONFIG.earthRadius * CONFIG.scale, 64, 64);
             let earth;
 
-            // Texture Loading
             const textureBase = 'https://threejs.org/examples/textures/planets/';
             const loader = new THREE.TextureLoader();
             loader.crossOrigin = 'anonymous';
@@ -822,8 +813,6 @@
             earth = new THREE.Mesh(earthGeometry, fallbackMaterial);
             scene.add(earth);
             
-            // TILT UPDATED: Set to a subtle 15 degrees on Z 
-            // but effectively seen from the side due to camera position
             const AXIAL_TILT = deg2rad(15);
             earth.rotation.z = AXIAL_TILT;
             earth.rotation.y = 0;
@@ -906,7 +895,7 @@
             scene.add(atmosphere);
             atmosphere.rotation.z = AXIAL_TILT;
             
-            // Altitude shells
+            // Altitude shells (decorative rings)
             Object.entries(CONFIG.shells).forEach(([name, shell]) => {
                 const shellRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
                 const shellGeometry = new THREE.TorusGeometry(shellRadius, 0.02, 16, 100);
@@ -924,7 +913,7 @@
                 }
             });
             
-            // Orbital planes visualization
+            // Orbital planes — orbit ring visualization
             CONFIG.planes.forEach((plane, planeIndex) => {
                 const planeGroup = new THREE.Group();
                 planeGroup.rotation.y = deg2rad(plane.raan);
@@ -947,120 +936,93 @@
                 scene.add(planeGroup);
             });
             
-            // Satellites
+            // ============================================
+            // SATELLITES — all 6U form factor
+            // ============================================
             const satellites = [];
             const solarPanelMaterial = getSolarPanelMaterial();
 
             function createSatellite(isPhysicist) {
                 const group = new THREE.Group();
+                const accentColor = isPhysicist ? CONFIG.physicistColor : CONFIG.surveyorColor;
                 
-                if (isPhysicist) {
-                    // 6U
-                    const bodyGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.1);
-                    const bodyMaterial = new THREE.MeshPhongMaterial({
-                        color: 0x333344,
-                        emissive: CONFIG.physicistColor,
-                        emissiveIntensity: 0.3
-                    });
-                    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-                    group.add(body);
-                    
-                    // Solar panels
-                    const panelGeometry = new THREE.BoxGeometry(0.3, 0.15, 0.01);
-                    const leftPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
-                    leftPanel.position.set(-0.22, 0, 0);
-                    group.add(leftPanel);
-                    
-                    const rightPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
-                    rightPanel.position.set(0.22, 0, 0);
-                    group.add(rightPanel);
-                    
-                    // Boom
-                    const boomGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 8);
-                    const boomMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
-                    const boom = new THREE.Mesh(boomGeometry, boomMaterial);
-                    boom.position.set(0, 0.22, 0);
-                    group.add(boom);
-                    
-                    // Glow
-                    const glowGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-                    const glowMaterial = new THREE.MeshBasicMaterial({
-                        color: CONFIG.physicistColor,
-                        transparent: true,
-                        opacity: 0.4
-                    });
-                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-                    group.add(glow);
-                    
-                } else {
-                    // 3U
-                    const bodyGeometry = new THREE.BoxGeometry(0.08, 0.2, 0.08);
-                    const bodyMaterial = new THREE.MeshPhongMaterial({
-                        color: 0x333344,
-                        emissive: CONFIG.surveyorColor,
-                        emissiveIntensity: 0.3
-                    });
-                    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-                    group.add(body);
-                    
-                    // Panels
-                    const panelGeometry = new THREE.BoxGeometry(0.12, 0.08, 0.005);
-                    const leftPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
-                    leftPanel.position.set(-0.1, 0, 0);
-                    group.add(leftPanel);
-                    
-                    const rightPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
-                    rightPanel.position.set(0.1, 0, 0);
-                    group.add(rightPanel);
-                    
-                    // Glow
-                    const glowGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-                    const glowMaterial = new THREE.MeshBasicMaterial({
-                        color: CONFIG.surveyorColor,
-                        transparent: true,
-                        opacity: 0.4
-                    });
-                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-                    group.add(glow);
-                }
+                // 6U body — shared geometry for both types
+                const bodyGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.1);
+                const bodyMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x333344,
+                    emissive: accentColor,
+                    emissiveIntensity: 0.3
+                });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                group.add(body);
+                
+                // Solar panels
+                const panelGeometry = new THREE.BoxGeometry(0.3, 0.15, 0.01);
+                const leftPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
+                leftPanel.position.set(-0.22, 0, 0);
+                group.add(leftPanel);
+                
+                const rightPanel = new THREE.Mesh(panelGeometry, solarPanelMaterial);
+                rightPanel.position.set(0.22, 0, 0);
+                group.add(rightPanel);
+                
+                // Boom (instrument mast)
+                const boomGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 8);
+                const boomMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+                const boom = new THREE.Mesh(boomGeometry, boomMaterial);
+                boom.position.set(0, 0.22, 0);
+                group.add(boom);
+                
+                // Glow
+                const glowGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: accentColor,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                group.add(glow);
                 
                 return group;
             }
             
-            // Distribute satellites
+            // Distribute satellites across 5 planes
+            // 6 Physicists (1 per plane, +1 extra in plane 0)
+            // 24 Surveyors (~5 per plane)
             CONFIG.planes.forEach((plane, planeIndex) => {
                 const planeGroup = new THREE.Group();
                 planeGroup.rotation.y = deg2rad(plane.raan);
                 planeGroup.rotation.x = deg2rad(90 - plane.inclination);
                 
-                // Physicists
-                const physicistShells = ['B', 'C'];
+                // Physicist(s) — anchor satellites with full instrument suite
+                // Place 1 per plane in shell B, plus an extra in plane 0 at shell C
+                const physicistShells = planeIndex === 0 ? ['B', 'C'] : ['B'];
                 physicistShells.forEach((shellName, shellIdx) => {
-                    if (planeIndex < 3 || shellIdx === 0) { 
-                        const shell = CONFIG.shells[shellName];
-                        const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
-                        const angle = (planeIndex * 90 + shellIdx * 45 + 15) * Math.PI / 180;
-                        
-                        const sat = createSatellite(true);
-                        sat.userData = {
-                            orbitRadius,
-                            angle,
-                            speed: CONFIG.orbitSpeed * (1 + Math.random() * 0.1),
-                            isPhysicist: true
-                        };
-                        
-                        satellites.push({ mesh: sat, planeGroup });
-                        planeGroup.add(sat);
-                    }
-                });
-                
-                // Surveyors
-                const shellNames = ['A', 'B', 'C'];
-                for (let i = 0; i < 6; i++) {
-                    const shellName = shellNames[i % 3];
                     const shell = CONFIG.shells[shellName];
                     const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
-                    const angle = (i * 60 + planeIndex * 15) * Math.PI / 180;
+                    const angle = (planeIndex * 72 + shellIdx * 45 + 15) * Math.PI / 180;
+                    
+                    const sat = createSatellite(true);
+                    sat.userData = {
+                        orbitRadius,
+                        angle,
+                        speed: CONFIG.orbitSpeed * (1 + Math.random() * 0.1),
+                        isPhysicist: true
+                    };
+                    
+                    satellites.push({ mesh: sat, planeGroup });
+                    planeGroup.add(sat);
+                });
+                
+                // Surveyors — drag measurement nodes
+                // ~5 per plane distributed across all 3 shells
+                const shellNames = ['A', 'B', 'C', 'A', 'C'];
+                const numSurveyors = planeIndex < 4 ? 5 : 4; // 5+5+5+5+4 = 24
+                for (let i = 0; i < numSurveyors; i++) {
+                    const shellName = shellNames[i % shellNames.length];
+                    const shell = CONFIG.shells[shellName];
+                    const orbitRadius = (CONFIG.earthRadius + shell.altitude) * CONFIG.scale;
+                    const angle = (i * (360 / numSurveyors) + planeIndex * 15) * Math.PI / 180;
                     
                     const sat = createSatellite(false);
                     sat.userData = {
@@ -1080,7 +1042,7 @@
             // Mouse controls
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
-            let cameraAngle = { theta: 0.8, phi: 1.5 }; // phi ~ PI/2 starts at equator
+            let cameraAngle = { theta: 0.8, phi: 1.5 };
             let cameraDistance = 25;
             
             container.addEventListener('mousedown', (e) => {
@@ -1168,7 +1130,7 @@
         }
         
         // ============================================
-        // SATELLITE PANEL VIEWS
+        // SATELLITE PANEL VIEWS (detailed 6U models)
         // ============================================
         function initSatelliteView(containerId, isPhysicist) {
             const container = document.getElementById(containerId);
@@ -1181,7 +1143,7 @@
             const scene = new THREE.Scene();
             
             const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
-            camera.position.set(0, 0, isPhysicist ? 4 : 3);
+            camera.position.set(0, 0, 4);
             
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
@@ -1197,7 +1159,8 @@
             keyLight.position.set(5, 5, 5);
             scene.add(keyLight);
             
-            const fillLight = new THREE.DirectionalLight(isPhysicist ? 0x00d4aa : 0xff9f43, 0.4);
+            const accentHex = isPhysicist ? 0x00d4aa : 0xff9f43;
+            const fillLight = new THREE.DirectionalLight(accentHex, 0.4);
             fillLight.position.set(-3, 0, 3);
             scene.add(fillLight);
             
@@ -1211,141 +1174,102 @@
             // Get shared texture
             const panelMaterial = getSolarPanelMaterial();
             
-            if (isPhysicist) {
-                // 6U Cubesat
-                const bodyGeometry = new THREE.BoxGeometry(0.8, 1.6, 0.5);
-                const bodyMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x2a2a3a,
-                    specular: 0x444444,
-                    shininess: 30
-                });
-                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-                satelliteGroup.add(body);
-                
-                // Gold foil
-                const foilGeometry = new THREE.BoxGeometry(0.75, 0.3, 0.52);
-                const foilMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xd4af37,
-                    specular: 0xffffff,
-                    shininess: 80
-                });
-                const foil1 = new THREE.Mesh(foilGeometry, foilMaterial);
-                foil1.position.y = 0.5;
-                satelliteGroup.add(foil1);
-                
-                const foil2 = new THREE.Mesh(foilGeometry, foilMaterial);
-                foil2.position.y = -0.5;
-                satelliteGroup.add(foil2);
-                
-                // Panels (Using Texture)
-                const panelGeometry = new THREE.BoxGeometry(1.5, 1.2, 0.03);
-                
-                [-1, 1].forEach(side => {
-                    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
-                    panel.position.x = side * 1.15;
-                    panel.position.y = 0;
-                    satelliteGroup.add(panel);
-                });
-                
-                // Boom
-                const boomGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1.2, 8);
-                const boomMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
-                const boom = new THREE.Mesh(boomGeometry, boomMaterial);
-                boom.position.y = 1.4;
-                satelliteGroup.add(boom);
-                
-                // Sensor
-                const sensorGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-                const sensorMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xcccccc,
-                    specular: 0xffffff,
-                    shininess: 100
-                });
-                const sensor = new THREE.Mesh(sensorGeometry, sensorMaterial);
-                sensor.position.y = 2;
-                satelliteGroup.add(sensor);
-                
-                // Inlet
-                const inletGeometry = new THREE.CylinderGeometry(0.12, 0.15, 0.1, 16);
-                const inletMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x444455,
-                    specular: 0x666677,
-                    shininess: 50
-                });
-                const inlet = new THREE.Mesh(inletGeometry, inletMaterial);
-                inlet.rotation.x = Math.PI / 2;
-                inlet.position.z = 0.3;
-                inlet.position.y = 0.3;
-                satelliteGroup.add(inlet);
-                
-                // Antennas
-                const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.4, 6);
-                const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
-                
-                const antenna1 = new THREE.Mesh(antennaGeometry, antennaMaterial);
-                antenna1.position.set(0.3, -0.9, 0.2);
-                antenna1.rotation.x = 0.3;
-                satelliteGroup.add(antenna1);
-                
-                const antenna2 = new THREE.Mesh(antennaGeometry, antennaMaterial);
-                antenna2.position.set(-0.3, -0.9, 0.2);
-                antenna2.rotation.x = 0.3;
-                satelliteGroup.add(antenna2);
-                
-            } else {
-                // 3U Cubesat
-                const bodyGeometry = new THREE.BoxGeometry(0.5, 1.4, 0.5);
-                const bodyMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x2a2a3a,
-                    specular: 0x444444,
-                    shininess: 30
-                });
-                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-                satelliteGroup.add(body);
-                
-                // Foil band
-                const foilGeometry = new THREE.BoxGeometry(0.52, 0.25, 0.52);
-                const foilMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xd4af37,
-                    specular: 0xffffff,
-                    shininess: 80
-                });
-                const foil = new THREE.Mesh(foilGeometry, foilMaterial);
-                foil.position.y = 0.3;
-                satelliteGroup.add(foil);
-                
-                // Panels (Using Texture)
-                const panelGeometry = new THREE.BoxGeometry(0.8, 0.6, 0.02);
-                
-                [-1, 1].forEach(side => {
-                    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
-                    panel.position.x = side * 0.65;
-                    panel.position.y = 0;
-                    satelliteGroup.add(panel);
-                });
-                
-                // Nose cone
-                const coneGeometry = new THREE.ConeGeometry(0.25, 0.4, 4);
-                const coneMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x3a3a4a,
-                    specular: 0x555566,
-                    shininess: 40
-                });
-                const cone = new THREE.Mesh(coneGeometry, coneMaterial);
-                cone.position.y = 0.9;
-                cone.rotation.y = Math.PI / 4;
-                satelliteGroup.add(cone);
-                
-                // Antenna
-                const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.3, 6);
-                const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
-                const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
-                antenna.position.y = -0.85;
-                satelliteGroup.add(antenna);
-            }
+            // === 6U CUBESAT MODEL (shared by both Physicist and Surveyor) ===
+            
+            // Main body
+            const bodyGeometry = new THREE.BoxGeometry(0.8, 1.6, 0.5);
+            const bodyMaterial = new THREE.MeshPhongMaterial({
+                color: 0x2a2a3a,
+                specular: 0x444444,
+                shininess: 30
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            satelliteGroup.add(body);
+            
+            // Gold foil thermal blankets
+            const foilGeometry = new THREE.BoxGeometry(0.75, 0.3, 0.52);
+            const foilMaterial = new THREE.MeshPhongMaterial({
+                color: 0xd4af37,
+                specular: 0xffffff,
+                shininess: 80
+            });
+            const foil1 = new THREE.Mesh(foilGeometry, foilMaterial);
+            foil1.position.y = 0.5;
+            satelliteGroup.add(foil1);
+            
+            const foil2 = new THREE.Mesh(foilGeometry, foilMaterial);
+            foil2.position.y = -0.5;
+            satelliteGroup.add(foil2);
+            
+            // Deployable solar panels
+            const panelGeometry = new THREE.BoxGeometry(1.5, 1.2, 0.03);
+            
+            [-1, 1].forEach(side => {
+                const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+                panel.position.x = side * 1.15;
+                panel.position.y = 0;
+                satelliteGroup.add(panel);
+            });
+            
+            // Instrument boom
+            const boomGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1.2, 8);
+            const boomMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
+            const boom = new THREE.Mesh(boomGeometry, boomMaterial);
+            boom.position.y = 1.4;
+            satelliteGroup.add(boom);
+            
+            // Sensor dome at boom tip
+            const sensorGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+            const sensorMaterial = new THREE.MeshPhongMaterial({
+                color: 0xcccccc,
+                specular: 0xffffff,
+                shininess: 100
+            });
+            const sensor = new THREE.Mesh(sensorGeometry, sensorMaterial);
+            sensor.position.y = 2;
+            satelliteGroup.add(sensor);
+            
+            // Ram-facing inlet (for atmospheric sampling)
+            const inletGeometry = new THREE.CylinderGeometry(0.12, 0.15, 0.1, 16);
+            const inletMaterial = new THREE.MeshPhongMaterial({
+                color: 0x444455,
+                specular: 0x666677,
+                shininess: 50
+            });
+            const inlet = new THREE.Mesh(inletGeometry, inletMaterial);
+            inlet.rotation.x = Math.PI / 2;
+            inlet.position.z = 0.3;
+            inlet.position.y = 0.3;
+            satelliteGroup.add(inlet);
+            
+            // Antennas
+            const antennaGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.4, 6);
+            const antennaMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+            
+            const antenna1 = new THREE.Mesh(antennaGeometry, antennaMaterial);
+            antenna1.position.set(0.3, -0.9, 0.2);
+            antenna1.rotation.x = 0.3;
+            satelliteGroup.add(antenna1);
+            
+            const antenna2 = new THREE.Mesh(antennaGeometry, antennaMaterial);
+            antenna2.position.set(-0.3, -0.9, 0.2);
+            antenna2.rotation.x = 0.3;
+            satelliteGroup.add(antenna2);
+            
+            // Accent glow — color distinguishes Physicist from Surveyor
+            const glowGeometry = new THREE.SphereGeometry(0.06, 16, 16);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: accentHex,
+                transparent: true,
+                opacity: 0.5
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            glow.position.y = 0;
+            satelliteGroup.add(glow);
             
             scene.add(satelliteGroup);
             
+            // Floor grid
             const gridHelper = new THREE.GridHelper(4, 10, 0x222233, 0x111122);
             gridHelper.position.y = -1.5;
             gridHelper.material.opacity = 0.3;
