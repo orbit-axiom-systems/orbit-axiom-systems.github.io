@@ -3,1278 +3,1422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbit Axiom Systems | Real-Time Satellite Drag Forecasting</title>
-    <meta name="description" content="Direct atmospheric measurement for satellite operations. Real-time drag forecasting through the Atlas Grid constellation.">
-    
+    <title>Orbit Axiom Systems | Space Environment Intelligence</title>
+    <meta name="description" content="Orbit Axiom Systems builds modular sensing nodes and software for radiation, magnetic-field, plasma, GNSS TEC/scintillation, and lunar dust environment intelligence.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a24;
-            --text-primary: #f0f0f5;
-            --text-secondary: #a0a0b0;
-            --text-muted: #606070;
-            --accent: #4a9eff;
-            --accent-dim: #2a5a9a;
-            --accent-glow: rgba(74, 158, 255, 0.15);
-            --border: #2a2a35;
+            --bg: #08090c;
+            --bg-2: #101219;
+            --surface: #151821;
+            --surface-2: #1c202b;
+            --line: rgba(255, 255, 255, 0.12);
+            --line-strong: rgba(255, 255, 255, 0.22);
+            --text: #f6f1e7;
+            --muted: #b8bac4;
+            --soft: #858995;
+            --jade: #54d2b5;
+            --amber: #f4be62;
+            --coral: #f06f5f;
+            --blue: #78a7ff;
+            --violet: #b993ff;
+            --moon: #d8d3c7;
+            --max: 1180px;
+            --nav-height: 74px;
         }
-        
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-        
+
         html {
             scroll-behavior: smooth;
         }
-        
+
         body {
-            font-family: 'Instrument Sans', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 16% 12%, rgba(84, 210, 181, 0.16), transparent 28rem),
+                radial-gradient(circle at 86% 8%, rgba(244, 190, 98, 0.12), transparent 25rem),
+                linear-gradient(180deg, #08090c 0%, #0d0f14 42%, #090a0d 100%);
+            color: var(--text);
+            font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
             overflow-x: hidden;
         }
-        
-        /* Navigation */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 76px 76px;
+            mask-image: linear-gradient(180deg, black, transparent 82%);
+            z-index: -1;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
         nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            z-index: 100;
-            padding: 1.5rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .logo {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            color: var(--text-primary);
-        }
-        
-        .logo img {
-            height: 28px;
-            width: auto;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 3rem;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: var(--text-primary);
+            z-index: 50;
+            height: var(--nav-height);
+            border-bottom: 1px solid var(--line);
+            background: rgba(8, 9, 12, 0.82);
+            backdrop-filter: blur(18px);
         }
 
-        /* Hamburger Menu Button */
+        .nav-inner {
+            width: min(var(--max), calc(100% - 2rem));
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 0;
+        }
+
+        .logo img {
+            width: auto;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .logo span {
+            display: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.76rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+            list-style: none;
+            color: var(--muted);
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 1rem;
+            border: 1px solid rgba(84, 210, 181, 0.45);
+            background: rgba(84, 210, 181, 0.1);
+            color: var(--text);
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
         .hamburger {
             display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 24px;
-            height: 18px;
-            background: transparent;
-            border: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
             cursor: pointer;
-            padding: 0;
-            z-index: 101;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .hamburger span {
-            display: block;
-            width: 100%;
+            width: 18px;
             height: 2px;
-            background: var(--text-primary);
-            border-radius: 2px;
-            transition: all 0.3s ease;
+            background: var(--text);
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
         .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
+            transform: translateY(7px) rotate(45deg);
         }
+
         .hamburger.active span:nth-child(2) {
             opacity: 0;
         }
+
         .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
+            transform: translateY(-7px) rotate(-45deg);
         }
-        
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 8rem 4rem 4rem;
-            position: relative;
-            overflow: hidden;
+
+        main {
+            padding-top: var(--nav-height);
         }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(74, 158, 255, 0.08), transparent),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(74, 158, 255, 0.04), transparent);
-            pointer-events: none;
-        }
-        
-        .hero-content {
-            max-width: 900px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .hero-tag {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 0.2em;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-        
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 600;
-            line-height: 1.15;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .hero h1 span {
-            color: var(--accent);
-        }
-        
-        .hero-description {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-        }
-        
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 1rem 2rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-        }
-        
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-primary);
-        }
-        
-        .btn-primary:hover {
-            background: #5aafff;
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--text-secondary);
-            background: var(--bg-secondary);
-        }
-        
-        /* Stats Bar */
-        .stats-bar {
-            display: flex;
-            gap: 4rem;
-            margin-top: 5rem;
-            padding-top: 3rem;
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-        
-        .stat {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .stat-value {
-            font-family: 'Space Mono', monospace;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            letter-spacing: 0.02em;
-        }
-        
-        /* Sections */
+
         section {
-            padding: 8rem 4rem;
-        }
-        
-        .section-tag {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--accent);
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-        
-        .section-title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .section-description {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 700px;
-            line-height: 1.8;
-        }
-        
-        /* Problem Section */
-        .problem {
-            background: var(--bg-secondary);
-        }
-        
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-        
-        .problem-card {
-            padding: 2rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-        
-        .problem-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            color: var(--text-primary);
-        }
-        
-        .problem-card p {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-        
-        /* Solution Section */
-        .solution {
-            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        }
-        
-        .solution-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6rem;
-            align-items: center;
-            margin-top: 4rem;
-        }
-        
-        /* --- VISUAL CONTAINER --- */
-        .solution-visual {
             position: relative;
-            height: 450px;
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        
-        .visual-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            padding: 2rem;
+            padding: 6.5rem 1rem;
         }
 
-        .visual-cta {
-            text-align: center;
-            z-index: 2;
-            animation: fadeIn 1s ease forwards 0.5s;
-            opacity: 0;
-        }
-
-        .visual-note {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            font-family: 'Space Mono', monospace;
-            letter-spacing: 0.05em;
-        }
-        
-        /* --- CSS EARTH & CONSTELLATION --- */
-        .orbit-visualization {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            transform-style: preserve-3d;
-            perspective: 1200px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* The Realistic Earth */
-        .earth {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 110px;  /* Larger size */
-            height: 110px;
-            margin-top: -55px;  /* Exact center offset */
-            margin-left: -55px; /* Exact center offset */
-            
-            border-radius: 50%;
-            /* Using a map texture */
-            background: url('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg') repeat-x;
-            background-size: 200% 100%; 
-            z-index: 10;
-            animation: earth-spin 30s linear infinite;
-            /* Stronger Inner shadow to mask poles */
-            box-shadow: inset 20px 0 45px 6px rgba(0,0,0,0.9), 
-                        inset -2px 0 8px 2px rgba(255, 255, 255, 0.15);
-        }
-
-        @keyframes earth-spin {
-            0% { background-position: 0 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Earth Atmosphere Glow */
-        .earth-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 140px;
-            height: 140px;
-            margin-top: -70px;
-            margin-left: -70px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(74, 158, 255, 0.2) 0%, transparent 60%);
-            z-index: 1;
-        }
-        
-        /* Constellation Rings - TIGHT LEO (150px) */
-        .orbit-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 150px;  /* Much tighter orbit */
-            height: 150px;
-            margin-top: -75px; /* Exact center offset */
-            margin-left: -75px; /* Exact center offset */
-            
-            border: 1px solid rgba(74, 158, 255, 0.15);
-            border-radius: 50%;
-            transform-style: preserve-3d;
-        }
-        
-        /* 4 Planes */
-        .ring-1 { transform: rotateY(70deg) rotateX(45deg); }
-        .ring-2 { transform: rotateY(70deg) rotateX(-45deg); }
-        .ring-3 { transform: rotateY(70deg) rotateX(15deg); }
-        .ring-4 { transform: rotateY(70deg) rotateX(-15deg); }
-        
-        /* Satellites */
-        .satellite {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 6px;
-            height: 8px; 
-            background: #a0cfff;
-            box-shadow: 0 0 6px rgba(160, 207, 255, 0.8);
-            /* Transform origin matches orbit radius (half of ring width: 75px) */
-            transform-origin: 0 75px; 
-            margin-left: -3px; 
-        }
-        
-        /* Animations */
-        .sat-1 { animation: orbit 12s linear infinite; }
-        .sat-1b { animation: orbit 12s linear infinite; animation-delay: -6s; }
-        
-        .sat-2 { animation: orbit 15s linear infinite reverse; }
-        .sat-2b { animation: orbit 15s linear infinite reverse; animation-delay: -7.5s; }
-        
-        .sat-3 { animation: orbit 10s linear infinite; animation-delay: -2s; }
-        .sat-4 { animation: orbit 14s linear infinite reverse; animation-delay: -5s; }
-        
-        @keyframes orbit {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .satellite::after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: inherit;
-            transform: rotateY(90deg);
-        }
-        
-        .solution-features {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        
-        .feature {
-            padding-left: 1.5rem;
-            border-left: 2px solid var(--border);
-        }
-        
-        .feature h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature p {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-        
-        /* Technology Section */
-        .technology {
-            background: var(--bg-secondary);
-        }
-        
-        .pipeline {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4rem;
-            padding: 3rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-        
-        .pipeline::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 10%;
-            right: 10%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-dim), var(--accent), var(--accent-dim));
-            opacity: 0.3;
-            z-index: 0;
-        }
-        
-        .pipeline-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            flex: 1;
-            min-width: 140px;
-        }
-        
-        .pipeline-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--accent-dim);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-        
-        .pipeline-icon svg {
-            width: 28px;
-            height: 28px;
-            stroke: var(--accent);
-            fill: none;
-            stroke-width: 1.5;
-        }
-        
-        .pipeline-step h4 {
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .pipeline-step span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        
-        /* Market Section */
-        .market {
-            background: var(--bg-primary);
-        }
-        
-        .market-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-        
-        .market-card {
-            padding: 2.5rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .market-card.highlight {
-            border-color: var(--accent-dim);
-            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-        }
-        
-        .market-value {
-            font-family: 'Space Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-        
-        .market-label {
-            font-size: 1rem;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .market-detail {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-        
-        .market-source {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 1rem;
-            font-style: italic;
-        }
-        
-        /* Founder Section */
-        .founder {
-            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-        }
-        
-        .founder-content {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 4rem;
-            margin-top: 4rem;
-            align-items: start;
-        }
-        
-        .founder-image {
-            width: 220px;
-            height: 220px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-        
-        .founder-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .founder-info h3 {
-            font-size: 1.75rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .founder-title {
-            font-size: 1rem;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-        }
-        
-        .founder-bio {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 2rem;
-        }
-        
-        .founder-credentials {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .credential {
-            padding: 0.5rem 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        
-        .credential a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .credential a:hover {
-            color: var(--accent);
-        }
-        
-        .founder-links {
-            margin-top: 2rem;
-            display: flex;
-            gap: 1.5rem;
-        }
-        
-        .founder-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s ease;
-        }
-        
-        .founder-links a:hover {
-            color: var(--accent);
-        }
-        
-        .founder-links svg {
-            width: 18px;
-            height: 18px;
-        }
-        
-        /* Contact Section */
-        .contact {
-            background: var(--bg-primary);
-            text-align: center;
-        }
-        
-        .contact-content {
-            max-width: 600px;
+        .container {
+            width: min(var(--max), 100%);
             margin: 0 auto;
         }
-        
-        .contact-email {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
-            color: var(--accent);
-            text-decoration: none;
-            display: inline-block;
-            margin: 2rem 0;
-            transition: all 0.3s ease;
-        }
-        
-        .contact-email:hover {
-            color: #5aafff;
-        }
-        
-        .contact-note {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-top: 1rem;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 2rem 4rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
+
+        .section-kicker {
+            display: inline-flex;
             align-items: center;
+            gap: 0.55rem;
+            margin-bottom: 1rem;
+            color: var(--jade);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.76rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .section-kicker::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+        }
+
+        .section-title {
+            max-width: 760px;
+            font-size: clamp(2rem, 5vw, 4.8rem);
+            line-height: 0.98;
+            letter-spacing: 0;
+            font-weight: 800;
+        }
+
+        .section-copy {
+            max-width: 730px;
+            margin-top: 1.35rem;
+            color: var(--muted);
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            min-height: 46px;
+            padding: 0 1.15rem;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-weight: 800;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--jade);
+            color: #06120f;
+        }
+
+        .btn-secondary {
+            border-color: var(--line-strong);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+        }
+
+        .hero {
+            min-height: calc(100vh - var(--nav-height));
+            display: grid;
+            align-items: center;
+            padding: 5rem 1rem 4.5rem;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            width: min(var(--max), 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 0.98fr) minmax(390px, 1fr);
+            gap: 4.5rem;
+            align-items: center;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
+            color: var(--amber);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .hero-kicker span:first-child {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--amber);
+            box-shadow: 0 0 24px var(--amber);
+        }
+
+        h1 {
+            max-width: 690px;
+            font-size: clamp(3.1rem, 6.4vw, 6.35rem);
+            line-height: 0.88;
+            letter-spacing: 0;
+            font-weight: 800;
+        }
+
+        h1 span {
+            color: var(--jade);
+        }
+
+        .hero-copy {
+            max-width: 650px;
+            margin-top: 1.45rem;
+            color: var(--muted);
+            font-size: clamp(1.08rem, 2vw, 1.32rem);
+        }
+
+        .hero-actions {
+            display: flex;
             flex-wrap: wrap;
+            gap: 0.85rem;
+            margin-top: 2.2rem;
+        }
+
+        .proof-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            margin-top: 1.7rem;
+            color: var(--soft);
+            font-size: 0.94rem;
+        }
+
+        .proof-line span {
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.035);
+            border-radius: 999px;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .system-visual {
+            position: relative;
+            min-height: 540px;
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(150deg, rgba(255, 255, 255, 0.08), transparent 34%),
+                radial-gradient(circle at 70% 28%, rgba(120, 167, 255, 0.16), transparent 16rem),
+                radial-gradient(circle at 20% 72%, rgba(244, 190, 98, 0.14), transparent 15rem),
+                rgba(255, 255, 255, 0.035);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .orbit-field {
+            position: absolute;
+            inset: 0;
+        }
+
+        .planet {
+            position: absolute;
+            left: 50%;
+            top: 49%;
+            width: 168px;
+            height: 168px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background:
+                linear-gradient(135deg, rgba(84, 210, 181, 0.78), rgba(120, 167, 255, 0.25)),
+                #121722;
+            box-shadow:
+                inset -28px -34px 44px rgba(0, 0, 0, 0.42),
+                0 0 90px rgba(84, 210, 181, 0.22);
+        }
+
+        .orbit-ring {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(var(--rotation));
+        }
+
+        .orbit-a {
+            width: 330px;
+            height: 128px;
+            --rotation: -22deg;
+        }
+
+        .orbit-b {
+            width: 408px;
+            height: 166px;
+            --rotation: 24deg;
+        }
+
+        .orbit-c {
+            width: 468px;
+            height: 206px;
+            --rotation: 72deg;
+        }
+
+        .node {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 13px;
+            height: 13px;
+            border-radius: 999px;
+            background: var(--jade);
+            box-shadow: 0 0 22px rgba(84, 210, 181, 0.9);
+        }
+
+        .node::after {
+            content: "";
+            width: 25px;
+            height: 25px;
+            border: 1px solid rgba(84, 210, 181, 0.4);
+            border-radius: 999px;
+        }
+
+        .node-a {
+            left: 16%;
+            top: 37%;
+        }
+
+        .node-b {
+            right: 17%;
+            top: 35%;
+            background: var(--amber);
+            box-shadow: 0 0 22px rgba(244, 190, 98, 0.85);
+        }
+
+        .node-c {
+            left: 40%;
+            bottom: 14%;
+            background: var(--coral);
+            box-shadow: 0 0 22px rgba(240, 111, 95, 0.85);
+        }
+
+        .domain-tag {
+            position: absolute;
+            border: 1px solid var(--line);
+            background: rgba(8, 9, 12, 0.78);
+            backdrop-filter: blur(16px);
+            border-radius: 7px;
+            padding: 0.8rem;
+            width: min(210px, calc(100% - 2rem));
+        }
+
+        .domain-tag strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .domain-tag span {
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .tag-earth {
+            left: 1.1rem;
+            top: 1.1rem;
+        }
+
+        .tag-cislunar {
+            right: 1.1rem;
+            top: 1.1rem;
+        }
+
+        .tag-surface {
+            left: 1.1rem;
+            bottom: 1.1rem;
+        }
+
+        .data-layer {
+            position: absolute;
+            right: 1.1rem;
+            bottom: 1.1rem;
+            width: min(235px, calc(100% - 2rem));
+            border: 1px solid rgba(84, 210, 181, 0.38);
+            background: rgba(84, 210, 181, 0.08);
+            border-radius: 7px;
+            padding: 0.9rem;
+        }
+
+        .data-layer strong {
+            display: block;
+            margin-bottom: 0.55rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .data-lines {
+            display: grid;
+            gap: 0.38rem;
+        }
+
+        .data-line {
+            height: 8px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+
+        .data-line span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--jade), var(--amber));
+            border-radius: inherit;
+        }
+
+        .stats-strip {
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.3rem 1rem;
+        }
+
+        .stats-grid {
+            width: min(var(--max), 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 1rem;
         }
-        
-        .footer-logo {
+
+        .stat {
+            border-left: 1px solid var(--line);
+            padding-left: 1rem;
+        }
+
+        .stat-value {
+            display: block;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(1.25rem, 3vw, 2rem);
+            font-weight: 700;
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--soft);
+            font-size: 0.9rem;
+        }
+
+        .problem-grid,
+        .domain-grid,
+        .business-grid,
+        .team-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .problem-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 2.5rem;
+        }
+
+        .domain-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 2.5rem;
+        }
+
+        .business-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 2.5rem;
+        }
+
+        .team-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 2.5rem;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            padding: 1.35rem;
+        }
+
+        .card h3 {
+            color: var(--text);
+            font-size: 1.18rem;
+            line-height: 1.15;
+        }
+
+        .card p,
+        .card li {
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        .card p {
+            margin-top: 0.75rem;
+        }
+
+        .card ul {
+            display: grid;
+            gap: 0.6rem;
+            margin-top: 1rem;
+            padding-left: 1rem;
+        }
+
+        .card.accent-jade {
+            border-color: rgba(84, 210, 181, 0.3);
+        }
+
+        .card.accent-amber {
+            border-color: rgba(244, 190, 98, 0.3);
+        }
+
+        .card.accent-coral {
+            border-color: rgba(240, 111, 95, 0.3);
+        }
+
+        .card.accent-violet {
+            border-color: rgba(185, 147, 255, 0.3);
+        }
+
+        .platform {
+            background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.025), transparent);
+        }
+
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0;
+            margin-top: 3rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .pipeline-step {
+            position: relative;
+            min-height: 220px;
+            padding: 1.5rem;
+            border-right: 1px solid var(--line);
+        }
+
+        .pipeline-step:last-child {
+            border-right: 0;
+        }
+
+        .step-number {
+            display: inline-flex;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--line-strong);
+            border-radius: 999px;
+            color: var(--amber);
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
+            font-weight: 700;
         }
-        
-        .footer-text {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+
+        .pipeline-step h3 {
+            font-size: 1.25rem;
         }
-        
-        /* Mobile Responsive */
-        @media (max-width: 900px) {
-            nav {
-                padding: 1rem 2rem;
+
+        .pipeline-step p {
+            margin-top: 0.75rem;
+            color: var(--muted);
+        }
+
+        .domains {
+            padding-bottom: 3rem;
+        }
+
+        .domain-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 2rem;
+            align-items: start;
+            margin-top: 2rem;
+            padding: 2rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .domain-panel + .domain-panel {
+            margin-top: 1rem;
+        }
+
+        .domain-panel h3 {
+            font-size: clamp(1.5rem, 3vw, 2.4rem);
+            line-height: 1;
+        }
+
+        .domain-panel p {
+            margin-top: 1rem;
+            color: var(--muted);
+        }
+
+        .capability-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .capability-tags span {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.52rem 0.72rem;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.035);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .security-diagram {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .signal-step {
+            min-height: 170px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .signal-step span {
+            display: block;
+            margin-bottom: 0.85rem;
+            color: var(--coral);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .signal-step strong {
+            display: block;
+            font-size: 1.1rem;
+            line-height: 1.18;
+        }
+
+        .signal-step p {
+            margin-top: 0.75rem;
+            color: var(--muted);
+            font-size: 0.94rem;
+        }
+
+        .team-card {
+            display: grid;
+            grid-template-columns: 132px minmax(0, 1fr);
+            gap: 1.25rem;
+            align-items: start;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .team-card img {
+            width: 132px;
+            height: 132px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+        }
+
+        .team-card h3 {
+            font-size: 1.3rem;
+        }
+
+        .team-role {
+            margin-top: 0.2rem;
+            color: var(--jade);
+            font-weight: 800;
+        }
+
+        .team-card p {
+            margin-top: 0.75rem;
+            color: var(--muted);
+        }
+
+        .team-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 1rem;
+        }
+
+        .team-links a {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0.46rem 0.65rem;
+            color: var(--text);
+            font-size: 0.86rem;
+            font-weight: 800;
+        }
+
+        .contact {
+            padding-bottom: 7rem;
+        }
+
+        .contact-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 2rem;
+            align-items: end;
+            border: 1px solid rgba(84, 210, 181, 0.28);
+            border-radius: 8px;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            background:
+                linear-gradient(135deg, rgba(84, 210, 181, 0.12), transparent 46%),
+                rgba(255, 255, 255, 0.04);
+        }
+
+        .contact h2 {
+            max-width: 750px;
+            font-size: clamp(2.2rem, 5vw, 5.4rem);
+            line-height: 0.93;
+            letter-spacing: 0;
+        }
+
+        .contact p {
+            max-width: 650px;
+            margin-top: 1.2rem;
+            color: var(--muted);
+            font-size: 1.08rem;
+        }
+
+        .contact-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .contact-email {
+            display: inline-flex;
+            margin-top: 1.1rem;
+            color: var(--jade);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.94rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 2rem 1rem;
+            color: var(--soft);
+        }
+
+        .footer-inner {
+            width: min(var(--max), 100%);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1040px) {
+            .nav-links {
+                gap: 0.9rem;
+                font-size: 0.86rem;
             }
-            
+
+            .hero-grid,
+            .domain-panel,
+            .contact-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .system-visual {
+                min-height: 500px;
+            }
+
+            .stats-grid,
+            .pipeline,
+            .business-grid,
+            .security-diagram {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .pipeline-step:nth-child(2) {
+                border-right: 0;
+            }
+
+            .pipeline-step:nth-child(1),
+            .pipeline-step:nth-child(2) {
+                border-bottom: 1px solid var(--line);
+            }
+
+            .contact-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 780px) {
+            :root {
+                --nav-height: 68px;
+            }
+
             .logo img {
-                height: 20px;
+                height: 18px;
             }
 
             .hamburger {
-                display: flex;
+                display: inline-flex;
             }
-            
+
             .nav-links {
-                display: none;
                 position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 100vh;
-                background: rgba(10, 10, 15, 0.98);
-                backdrop-filter: blur(20px);
+                inset: var(--nav-height) 0 auto 0;
+                display: none;
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 2rem;
-                gap: 2rem;
-                z-index: 100;
+                align-items: stretch;
+                gap: 0;
+                padding: 1rem;
+                border-bottom: 1px solid var(--line);
+                background: rgba(8, 9, 12, 0.96);
             }
 
             .nav-links.active {
                 display: flex;
             }
 
-            .nav-links li a {
-                font-size: 1.5rem;
+            .nav-links li {
+                border-bottom: 1px solid var(--line);
             }
-            
-            .hero, section {
-                padding: 6rem 2rem;
+
+            .nav-links li:last-child {
+                border-bottom: 0;
             }
-            
-            .solution-content {
+
+            .nav-links a {
+                display: block;
+                padding: 0.95rem 0.2rem;
+            }
+
+            .nav-cta {
+                margin-top: 0.8rem;
+            }
+
+            section {
+                padding: 4.5rem 1rem;
+            }
+
+            .hero {
+                padding-top: 3.2rem;
+            }
+
+            h1 {
+                font-size: clamp(3rem, 16vw, 5.2rem);
+            }
+
+            .system-visual {
+                min-height: 560px;
+            }
+
+            .domain-tag,
+            .data-layer {
+                position: relative;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
+                width: auto;
+                margin: 0.8rem;
+            }
+
+            .orbit-field {
+                opacity: 0.65;
+            }
+
+            .problem-grid,
+            .domain-grid,
+            .stats-grid,
+            .pipeline,
+            .business-grid,
+            .security-diagram,
+            .team-grid {
                 grid-template-columns: 1fr;
-                gap: 3rem;
             }
-            
-            .solution-visual {
-                order: -1;
-                height: 400px;
+
+            .pipeline-step,
+            .pipeline-step:nth-child(2) {
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
             }
-            
-            .founder-content {
+
+            .pipeline-step:last-child {
+                border-bottom: 0;
+            }
+
+            .domain-panel {
+                padding: 1.2rem;
+            }
+
+            .team-card {
                 grid-template-columns: 1fr;
-                gap: 2rem;
             }
-            
-            .founder-image {
-                width: 180px;
-                height: 180px;
-            }
-            
-            .stats-bar {
-                gap: 2rem;
-            }
-            
-            .pipeline::before {
-                display: none;
-            }
-            
-            footer {
-                padding: 2rem;
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .market-grid {
-                grid-template-columns: 1fr;
+
+            .team-card img {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1;
             }
         }
-        
-        /* Animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.8s ease forwards;
-        }
-        
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
     <nav>
-        <a href="/" class="logo">
-            <img src="ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems">
-        </a>
-        
-        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#problem">Problem</a></li>
-            <li><a href="#solution">Atlas Grid</a></li>
-            <li><a href="#technology">Technology</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="#market">Market</a></li>
-            <li><a href="#founder">Founders</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
-    
-    <section class="hero">
-        <div class="hero-content">
-            <p class="hero-tag fade-in">Satellite Operations Infrastructure</p>
-            <h1 class="fade-in delay-1">Real-time drag forecasting through <span>direct atmospheric measurement</span></h1>
-            <p class="hero-description fade-in delay-2">Current satellite drag predictions rely on physics-based models with no direct sensing of the thermosphere. Atlas Grid changes this with in-situ measurement from a dedicated sensor constellation.</p>
-            <div class="hero-cta fade-in delay-3">
-                <a href="#contact" class="btn btn-primary">Get in Touch</a>
-                <a href="atlas-grid/index.html" class="btn btn-secondary">View The Grid</a>
-            </div>
-            <div class="stats-bar fade-in delay-4">
-                <div class="stat">
-                    <span class="stat-value">$1T+</span>
-                    <span class="stat-label">Protected orbital assets</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value">100k+</span>
-                    <span class="stat-label">Satellites at risk</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value">$513M+</span>
-                    <span class="stat-label">Annual drag services market</span>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="problem" id="problem">
-        <span class="section-tag">The Problem</span>
-        <h2 class="section-title">Satellite operators are flying blind</h2>
-        <p class="section-description">Atmospheric drag is the dominant perturbation for low-Earth orbit satellites. Current prediction methods fail when operators need them most—during geomagnetic storms that can increase drag by 10x or more.</p>
-        
-        <div class="problem-grid">
-            <div class="problem-card">
-                <h3>Model Dependency</h3>
-                <p>Existing solutions rely entirely on empirical models (NRLMSISE, JB2008) that were calibrated on historical data. They cannot capture real-time thermospheric variability.</p>
-            </div>
-            <div class="problem-card">
-                <h3>No Direct Sensing</h3>
-                <p>There is no operational infrastructure measuring thermospheric density directly. Operators depend on predictions derived from solar and geomagnetic proxies—not actual conditions.</p>
-            </div>
-            <div class="problem-card">
-                <h3>Storm-Time Failures</h3>
-                <p>During geomagnetic storms—precisely when accurate predictions matter most—model errors can exceed 50%. This leads to emergency maneuvers, collision risk, and operational uncertainty.</p>
-            </div>
-        </div>
-    </section>
-    
-    <section class="solution" id="solution">
-        <span class="section-tag">The Solution</span>
-        <h2 class="section-title">Atlas Grid</h2>
-        <p class="section-description">A dedicated constellation providing real-time, in-situ atmospheric density measurements across low-Earth orbit. Direct sensing, not modeling.</p>
-        
-        <div class="solution-content">
-            <div class="solution-visual">
-                <div class="visual-container">
-                    <div class="orbit-visualization">
-                        <div class="earth-glow"></div>
-                        <div class="earth"></div>
-                        
-                        <div class="orbit-ring ring-1">
-                            <div class="satellite sat-1"></div>
-                            <div class="satellite sat-1b"></div>
-                        </div>
-                        
-                        <div class="orbit-ring ring-2">
-                            <div class="satellite sat-2"></div>
-                            <div class="satellite sat-2b"></div>
-                        </div>
-                        
-                        <div class="orbit-ring ring-3">
-                            <div class="satellite sat-3"></div>
-                        </div>
-
-                        <div class="orbit-ring ring-4">
-                            <div class="satellite sat-4"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="visual-cta">
-                        <a href="atlas-grid/index.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                            </svg>
-                            Explore Constellation
-                        </a>
-                        <p class="visual-note">Interactive 3D View</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="solution-features">
-                <div class="feature">
-                    <h3>Direct Measurement</h3>
-                    <p>Purpose-built sensors measuring atmospheric density at orbital altitudes. No models, no proxies—actual thermospheric conditions in real-time.</p>
-                </div>
-                <div class="feature">
-                    <h3>Global Coverage</h3>
-                    <p>Distributed constellation architecture providing continuous coverage across all local times, latitudes, and altitudes relevant to satellite operations.</p>
-                </div>
-                <div class="feature">
-                    <h3>Storm Resilience</h3>
-                    <p>Measurement-based approach captures rapid density variations during geomagnetic storms, enabling accurate predictions precisely when they matter most.</p>
-                </div>
-                <div class="feature">
-                    <h3>Operational Integration</h3>
-                    <p>Data products designed for direct integration into satellite operations workflows, maneuver planning systems, and conjunction assessment processes.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="technology" id="technology">
-        <span class="section-tag">Technology</span>
-        <h2 class="section-title">Sun-to-Thermosphere Pipeline</h2>
-        <p class="section-description">Our forecasting system tracks space weather from its solar origins through interplanetary space to its thermospheric effects—providing context and lead time for operational decisions.</p>
-        
-        <div class="pipeline">
-            <div class="pipeline-step">
-                <div class="pipeline-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="5" />
-                        <line x1="12" y1="1" x2="12" y2="3" />
-                        <line x1="12" y1="21" x2="12" y2="23" />
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                        <line x1="1" y1="12" x2="3" y2="12" />
-                        <line x1="21" y1="12" x2="23" y2="12" />
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                    </svg>
-                </div>
-                <h4>Solar Surface</h4>
-                <span>Coronal holes, active regions</span>
-            </div>
-            <div class="pipeline-step">
-                <div class="pipeline-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 12 C4 12 8 4 12 12 C16 20 20 12 20 12" />
-                        <path d="M4 8 C4 8 8 0 12 8 C16 16 20 8 20 8" />
-                        <path d="M4 16 C4 16 8 8 12 16 C16 24 20 16 20 16" />
-                    </svg>
-                </div>
-                <h4>Solar Wind</h4>
-                <span>L1 monitoring, shock detection</span>
-            </div>
-            <div class="pipeline-step">
-                <div class="pipeline-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)" />
-                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)" />
-                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)" />
-                        <circle cx="12" cy="12" r="2" fill="currentColor" />
-                    </svg>
-                </div>
-                <h4>Magnetosphere</h4>
-                <span>Geomagnetic response</span>
-            </div>
-            <div class="pipeline-step">
-                <div class="pipeline-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="3" />
-                        <circle cx="12" cy="12" r="6" opacity="0.6" />
-                        <circle cx="12" cy="12" r="9" opacity="0.3" />
-                    </svg>
-                </div>
-                <h4>Thermosphere</h4>
-                <span>Density variations</span>
-            </div>
-            <div class="pipeline-step">
-                <div class="pipeline-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="8" y="8" width="8" height="8" rx="1" />
-                        <line x1="4" y1="12" x2="8" y2="12" />
-                        <line x1="16" y1="12" x2="20" y2="12" />
-                        <line x1="12" y1="4" x2="12" y2="8" />
-                        <line x1="12" y1="16" x2="12" y2="20" />
-                    </svg>
-                </div>
-                <h4>Drag Forecast</h4>
-                <span>Operational predictions</span>
-            </div>
-        </div>
-    </section>
-    
-    <section class="market" id="market">
-        <span class="section-tag">Market Opportunity</span>
-        <h2 class="section-title">A critical infrastructure gap</h2>
-        <p class="section-description">The space economy depends on accurate drag prediction. As orbital assets multiply, so does the cost of uncertainty.</p>
-        
-        <div class="market-grid">
-            <div class="market-card highlight">
-                <div class="market-value">$1T+</div>
-                <div class="market-label">Protected Orbital Assets</div>
-                <div class="market-detail">Satellites, space stations, and collision liability at stake</div>
-                <div class="market-source">McKinsey & Company, WEF 2024</div>
-            </div>
-            <div class="market-card">
-                <div class="market-value">$2.9B → $7B</div>
-                <div class="market-label">Combined TAM by 2032</div>
-                <div class="market-detail">Space weather ($1.2B → $2.8B) + SSA/Collision avoidance ($1.7B → $4.2B)</div>
-                <div class="market-source">DataIntelo</div>
-            </div>
-            <div class="market-card">
-                <div class="market-value">9.5%</div>
-                <div class="market-label">CAGR</div>
-                <div class="market-detail">Drag forecasting is the fastest-growing segment in space weather services</div>
-                <div class="market-source">Industry analysis</div>
-            </div>
-            <div class="market-card">
-                <div class="market-value">$513M+</div>
-                <div class="market-label">Annual Drag Services</div>
-                <div class="market-detail">Verified current spending on atmospheric drag prediction and analysis</div>
-                <div class="market-source">Primary research</div>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 3rem;">
-            <a href="market-opportunity/index.html" class="btn btn-secondary">
-                View Full Market Analysis &rarr;
+        <div class="nav-inner">
+            <a href="/" class="logo" aria-label="Orbit Axiom Systems home">
+                <img src="ORBITAXIOM_LOGO_filled_cropped.png" alt="Orbit Axiom Systems">
+                <span>Orbit Axiom Systems</span>
             </a>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#platform">Platform</a></li>
+                <li><a href="#earth-orbit">Earth Orbit</a></li>
+                <li><a href="#lunar">Lunar</a></li>
+                <li><a href="#security">National Security</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#contact" class="nav-cta">Investor Brief</a></li>
+            </ul>
         </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <div class="hero-kicker"><span></span><span>Space Environment Intelligence</span></div>
+                    <h1>The local intelligence layer for <span>space operations</span></h1>
+                    <p class="hero-copy">Orbit Axiom builds modular sensing nodes and software for radiation, magnetic-field, plasma, GNSS TEC/scintillation, and lunar dust awareness across Earth orbit, cislunar space, and the lunar surface.</p>
+                    <div class="hero-actions">
+                        <a href="#contact" class="btn btn-primary">Request Investor Brief</a>
+                        <a href="#contact" class="btn btn-secondary">Discuss Mission Pilot</a>
+                    </div>
+                    <div class="proof-line" aria-label="Company proof points">
+                        <span>GOES-R</span>
+                        <span>DSCOVR</span>
+                        <span>SWFO-L1</span>
+                        <span>NOAA / NASA instrumentation</span>
+                    </div>
+                </div>
+
+                <div class="system-visual" aria-label="Orbit Axiom sensing network diagram">
+                    <div class="orbit-field">
+                        <div class="planet"></div>
+                        <div class="orbit-ring orbit-a"></div>
+                        <div class="orbit-ring orbit-b"></div>
+                        <div class="orbit-ring orbit-c"></div>
+                        <div class="node node-a"></div>
+                        <div class="node node-b"></div>
+                        <div class="node node-c"></div>
+                    </div>
+
+                    <div class="domain-tag tag-earth">
+                        <strong>Earth Orbit</strong>
+                        <span>Radiation, plasma, MAG, GNSS TEC and scintillation products.</span>
+                    </div>
+                    <div class="domain-tag tag-cislunar">
+                        <strong>Cislunar</strong>
+                        <span>Local context for lunar orbiting assets and upstream warning.</span>
+                    </div>
+                    <div class="domain-tag tag-surface">
+                        <strong>Lunar Surface</strong>
+                        <span>Dust, charging, radiation, and field awareness for surface systems.</span>
+                    </div>
+                    <div class="data-layer">
+                        <strong>API / Alerts / Mission Hooks</strong>
+                        <div class="data-lines" aria-hidden="true">
+                            <div class="data-line"><span style="width: 86%;"></span></div>
+                            <div class="data-line"><span style="width: 64%;"></span></div>
+                            <div class="data-line"><span style="width: 76%;"></span></div>
+                            <div class="data-line"><span style="width: 52%;"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
-    
-    <section class="founder" id="founder">
-        <span class="section-tag">Founders</span>
-        <h2 class="section-title">Built by domain experts</h2>
-        
-        <div class="founder-content">
-            <div class="founder-image">
-                <img src="me_with_charlie.jpg" alt="Fadil Inceoglu, PhD - Founder & CEO of Orbit Axiom Systems" />
-            </div>
-            <div class="founder-info">
-                <h3>Dr. Fadil Inceoglu</h3>
-                <p class="founder-title">Co-Founder & CEO</p>
-                <p class="founder-bio">Space physicist at NCEI-NOAA/CIRES-University of Colorado Boulder with over a decade of experience in solar physics and space weather forecasting. Developer of operational algorithms for GOES satellites. Research spanning solar physics to galactic cosmic rays, solar wind dynamics, geomagnetic dynamics, and machine learning applications to space weather. Creator of coronal hole detection algorithms used by GFZ Potsdam for operational HSS forecasting.</p>
-                
-                <div class="founder-credentials">
-                    <span class="credential"><a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">25+ peer-reviewed publications</a></span>
-                    <span class="credential">$655K+ in NASA/NSF grants</span>
-                    <span class="credential">NOAA operational deployment</span>
-                    <span class="credential">GOES satellite algorithms</span>
-                    <span class="credential">GFZ Potsdam CH detection</span>
+
+        <div class="stats-strip">
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-value">14,200</span>
+                    <span class="stat-label">functioning satellites in orbit today</span>
                 </div>
-                
-                <div class="founder-links">
-                    <a href="https://www.linkedin.com/in/fadil-inceoglu/" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        LinkedIn
-                    </a>
-                    <a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/></svg>
-                        Google Scholar
-                    </a>
+                <div class="stat">
+                    <span class="stat-value">$230.6M</span>
+                    <span class="stat-label">Space Weather Next L1 spacecraft order</span>
                 </div>
-                
-                <div style="margin-top: 2rem;">
-                    <a href="founder/fadil.html" class="btn btn-secondary">
-                        View Full CV &rarr;
-                    </a>
+                <div class="stat">
+                    <span class="stat-value">15</span>
+                    <span class="stat-label">planned CLPS lunar deliveries by 2028</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">$2M</span>
+                    <span class="stat-label">pre-seed target for the first flight node</span>
                 </div>
             </div>
         </div>
 
-        <div class="founder-content" style="margin-top: 4rem;">
-            <div class="founder-image">
-                <img src="paul.png" alt="Dr. Paul Loto'aniu - Co-Founder of Orbit Axiom Systems" />
-            </div>
-            <div class="founder-info">
-                <h3>Dr. Paul Loto'aniu</h3>
-                <p class="founder-title">Co-Founder & Chief Scientist</p>
-                <p class="founder-bio">Space physicist and space-systems expert with over 15 years of experience in space weather, heliophysics, and spacecraft instrumentation. Instrument scientist and technical lead on major NASA–NOAA missions including GOES-R, DSCOVR, and SWFO-L1. Expertise spanning spacecraft hardware development, on-orbit calibration, anomaly investigation, and delivery of operational space-weather products used to protect space-based assets.</p>
+        <section id="problem">
+            <div class="container">
+                <span class="section-kicker">The Missing Layer</span>
+                <h2 class="section-title">Space operations still infer local risk from distant measurements</h2>
+                <p class="section-copy">The operating environment changes locally. Spacecraft, lunar systems, and national-security missions need situational awareness where assets actually operate, not only post-event reconstruction from sparse reference sensors.</p>
 
-                <div class="founder-credentials">
-                    <span class="credential">50+ peer-reviewed publications</span>
-                    <span class="credential">$6M+ in NASA/NOAA/NSF grants</span>
-                    <span class="credential">NASA–NOAA mission leadership</span>
-                    <span class="credential">GOES-R, DSCOVR, SWFO-L1 instruments</span>
-                    <span class="credential">PI on flight magnetometer hardware</span>
-                </div>
-
-                <div class="founder-links">
-                    <a href="https://www.linkedin.com/in/dr-paul-lotoaniu-b49582340/" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        LinkedIn
-                    </a>
-                </div>
-
-                <div style="margin-top: 2rem;">
-                    <a href="founder/paul.html" class="btn btn-secondary">
-                        View Full CV &rarr;
-                    </a>
+                <div class="problem-grid">
+                    <article class="card accent-coral">
+                        <h3>Radiation and particles</h3>
+                        <p>Exposure, lifetime, anomaly diagnosis, and mission timing depend on local particle conditions and changing radiation context.</p>
+                    </article>
+                    <article class="card accent-jade">
+                        <h3>Plasma and magnetic fields</h3>
+                        <p>Charging, safing, instrument context, and geospace coupling require measurements close to the mission, not only upstream references.</p>
+                    </article>
+                    <article class="card accent-amber">
+                        <h3>GNSS TEC and scintillation</h3>
+                        <p>Ionospheric structure affects communications, navigation, and anomaly awareness for commercial, civil, and national-security workflows.</p>
+                    </article>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <section class="contact" id="contact">
-        <div class="contact-content">
-            <span class="section-tag">Get in Touch</span>
-            <h2 class="section-title">Let's talk</h2>
-            <p class="section-description" style="margin: 0 auto;">Whether you're a satellite operator looking for better drag predictions or an investor interested in space infrastructure, we'd love to hear from you.</p>
-            
-            <a href="#" class="contact-email" id="contact-email"></a>
-            <script>
-                (function(){
-                    var u = 'fadil';
-                    var d = 'orbitaxiomsystems.com';
-                    var e = u + '@' + d;
-                    var el = document.getElementById('contact-email');
-                    el.href = 'mailto:' + e;
-                    el.textContent = e;
-                })();
-            </script>
-            
-            <p class="contact-note">Based in Miami, Florida</p>
-        </div>
-    </section>
-    
+        </section>
+
+        <section class="platform" id="platform">
+            <div class="container">
+                <span class="section-kicker">Platform</span>
+                <h2 class="section-title">Hardware opens the door. Workflow becomes the moat.</h2>
+                <p class="section-copy">Orbit Axiom is a sensing-data-software stack. Reusable flight electronics feed a calibrated environment data layer, which feeds software products that become part of mission operations.</p>
+
+                <div class="pipeline">
+                    <article class="pipeline-step">
+                        <span class="step-number">01</span>
+                        <h3>Sense</h3>
+                        <p>Flight nodes and hosted payload integrations collect local radiation, magnetic-field, plasma, GNSS, and dust signals.</p>
+                    </article>
+                    <article class="pipeline-step">
+                        <span class="step-number">02</span>
+                        <h3>Fuse</h3>
+                        <p>Calibration, event context, and cross-sensor validation turn raw measurements into usable environment intelligence.</p>
+                    </article>
+                    <article class="pipeline-step">
+                        <span class="step-number">03</span>
+                        <h3>Deliver</h3>
+                        <p>APIs, dashboards, alerts, and historical datasets bring the environment into operator and developer workflows.</p>
+                    </article>
+                    <article class="pipeline-step">
+                        <span class="step-number">04</span>
+                        <h3>Act</h3>
+                        <p>Mission software hooks support planning, safing, autonomy, early warning, and anomaly investigation.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="domains" id="earth-orbit">
+            <div class="container">
+                <span class="section-kicker">Operating Domains</span>
+                <h2 class="section-title">One core stack. Multiple mission front ends.</h2>
+                <p class="section-copy">The same sensing and data model expands across domains because the causal problem is the same: local environment signals change mission decisions.</p>
+
+                <article class="domain-panel">
+                    <div>
+                        <h3>Earth-orbit nodes for SWx and ionospheric anomaly awareness</h3>
+                        <p>Hosted payloads create the fastest path to first data, pilots, and software subscriptions.</p>
+                    </div>
+                    <div>
+                        <div class="capability-tags">
+                            <span>Radiation / particles</span>
+                            <span>Magnetic field</span>
+                            <span>Plasma</span>
+                            <span>GNSS TEC</span>
+                            <span>Scintillation</span>
+                            <span>Operator alerts</span>
+                        </div>
+                        <div class="domain-grid">
+                            <article class="card">
+                                <h3>Commercial operations</h3>
+                                <p>Spacecraft anomaly context, communications and navigation disruption awareness, and API feeds for operational teams.</p>
+                            </article>
+                            <article class="card">
+                                <h3>Government workflows</h3>
+                                <p>Local environment data for launch context, civil space weather services, mission assurance, and early anomaly cueing.</p>
+                            </article>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="domain-panel" id="lunar">
+                    <div>
+                        <h3>Local context for lunar and cislunar infrastructure</h3>
+                        <p>As lunar operations become repeatable, local environment awareness shifts from science payload to mission infrastructure.</p>
+                    </div>
+                    <div>
+                        <div class="capability-tags">
+                            <span>Radiation</span>
+                            <span>Plasma</span>
+                            <span>Magnetic field</span>
+                            <span>Magnetotail context</span>
+                            <span>Surface operations</span>
+                        </div>
+                        <div class="domain-grid">
+                            <article class="card">
+                                <h3>Lunar orbit</h3>
+                                <p>Gateway, landers, and lunar orbiting assets need local context for radiation, charging, and field conditions.</p>
+                            </article>
+                            <article class="card">
+                                <h3>Lunar surface</h3>
+                                <p>Habitats, rovers, suits, seals, optics, radiators, and solar arrays feel the environment directly.</p>
+                            </article>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="domain-panel">
+                    <div>
+                        <h3>Dust is the fourth lunar signal</h3>
+                        <p>Keep the tri-sensor core. Add rover-mounted dust sensing as the lunar front end for charge, adhesion, ingress, and contamination context.</p>
+                    </div>
+                    <div>
+                        <div class="capability-tags">
+                            <span>Dust adhesion</span>
+                            <span>Electrostatic charge</span>
+                            <span>EVA timing</span>
+                            <span>Rover maintenance</span>
+                            <span>Habitat protection</span>
+                        </div>
+                        <div class="domain-grid">
+                            <article class="card">
+                                <h3>Protect hardware</h3>
+                                <p>Seals, optics, solar arrays, radiators, and mobility systems need local dust-risk context.</p>
+                            </article>
+                            <article class="card">
+                                <h3>Protect crew</h3>
+                                <p>Surface environment intelligence supports EVA planning, ingress control, and contamination-aware operations.</p>
+                            </article>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="security">
+            <div class="container">
+                <span class="section-kicker">National Security</span>
+                <h2 class="section-title">Environment intelligence for contested-domain awareness</h2>
+                <p class="section-copy">GNSS TEC and scintillation monitoring adds ionospheric anomaly awareness for communications, navigation, launch, missile-defense, and contested-domain workflows. Orbit Axiom measures environmental signals locally and delivers calibrated context for early warning, anomaly cueing, and mission assurance.</p>
+
+                <div class="security-diagram">
+                    <article class="signal-step">
+                        <span>Signal</span>
+                        <strong>Ionospheric disturbance</strong>
+                        <p>High-energy atmospheric and space events can leave measurable structure in the ionosphere.</p>
+                    </article>
+                    <article class="signal-step">
+                        <span>Measure</span>
+                        <strong>TEC and scintillation signature</strong>
+                        <p>GNSS front ends track signal behavior that matters for navigation and communications resilience.</p>
+                    </article>
+                    <article class="signal-step">
+                        <span>Fuse</span>
+                        <strong>SWx context</strong>
+                        <p>Radiation, plasma, and magnetic-field data separate environmental background from operational anomalies.</p>
+                    </article>
+                    <article class="signal-step">
+                        <span>Deliver</span>
+                        <strong>Alert and API cue</strong>
+                        <p>Mission systems receive calibrated context without exposing sensitive operational assumptions.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="business">
+            <div class="container">
+                <span class="section-kicker">Venture Logic</span>
+                <h2 class="section-title">Reusable hardware on the front end. Recurring data on the back end.</h2>
+                <p class="section-copy">The same electronics and data model create several revenue layers: flight hardware, hosted integrations, data subscriptions, software access, and government pilots.</p>
+
+                <div class="business-grid">
+                    <article class="card accent-jade">
+                        <h3>Hardware and integration</h3>
+                        <p>Flight units, hosted payload packages, and mission-specific configurations.</p>
+                    </article>
+                    <article class="card accent-amber">
+                        <h3>Data subscriptions</h3>
+                        <p>Environment feeds, alerts, and historical datasets for operators and civil users.</p>
+                    </article>
+                    <article class="card accent-violet">
+                        <h3>API and software</h3>
+                        <p>Dashboard seats, developer access, mission hooks, autonomy inputs, and analytics.</p>
+                    </article>
+                    <article class="card accent-coral">
+                        <h3>Government programs</h3>
+                        <p>Pilots, hosted demos, payload opportunities, and commercial data buys.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="team">
+            <div class="container">
+                <span class="section-kicker">Team</span>
+                <h2 class="section-title">The physics-to-hardware execution pair</h2>
+                <p class="section-copy">Orbit Axiom is built by founders who have worked inside the instrumentation and operations context that today protects space assets.</p>
+
+                <div class="team-grid">
+                    <article class="team-card">
+                        <img src="me_with_charlie.jpg" alt="Dr. Fadil Inceoglu">
+                        <div>
+                            <h3>Dr. Fadil Inceoglu</h3>
+                            <div class="team-role">Co-Founder and CEO</div>
+                            <p>NOAA / NCEI and CIRES-CU Boulder space physicist with 25+ publications, NASA / NSF grant experience, and operational algorithms for GOES satellite data.</p>
+                            <div class="team-links">
+                                <a href="founder/fadil.html">Full CV</a>
+                                <a href="https://scholar.google.com/citations?user=i0OgfagAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener">Scholar</a>
+                                <a href="https://www.linkedin.com/in/fadil-inceoglu/" target="_blank" rel="noopener">LinkedIn</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="team-card">
+                        <img src="paul.png" alt="Dr. Paul Loto'aniu">
+                        <div>
+                            <h3>Dr. Paul Loto'aniu</h3>
+                            <div class="team-role">Co-Founder and Chief Scientist</div>
+                            <p>15+ years leading NASA-NOAA space weather instruments, including GOES-R, DSCOVR, SWFO-L1, and a NASA-JPL magnetometer development program.</p>
+                            <div class="team-links">
+                                <a href="founder/paul.html">Full CV</a>
+                                <a href="https://www.linkedin.com/in/dr-paul-lotoaniu-b49582340/" target="_blank" rel="noopener">LinkedIn</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <div class="container">
+                <div class="contact-panel">
+                    <div>
+                        <span class="section-kicker">First Node</span>
+                        <h2>First flight node. First owned dataset. First operating layer.</h2>
+                        <p>Orbit Axiom is preparing a modular flight node and the data platform around it. We are building toward hosted payload demonstrations, early customer pilots, and lunar follow-on deployments.</p>
+                        <a href="#" class="contact-email" id="contact-email"></a>
+                    </div>
+                    <div class="contact-actions">
+                        <a href="#" class="btn btn-primary contact-mail-link">Request Investor Brief</a>
+                        <a href="#" class="btn btn-secondary contact-mail-link">Discuss Mission Pilot</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer>
-        <div class="footer-logo">ORBIT AXIOM SYSTEMS</div>
-        <p class="footer-text">© 2025 Orbit Axiom Systems. All rights reserved.</p>
+        <div class="footer-inner">
+            <span>Orbit Axiom Systems</span>
+            <span>Copyright 2026. All rights reserved.</span>
+        </div>
     </footer>
-    
-    <script>
-        // Smooth scroll for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all sections for scroll animations
-        document.querySelectorAll('section').forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(section);
-        });
 
-        // Toggle Mobile Menu
+    <script>
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
-        
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navLinks.classList.toggle('active');
-                
-                // Prevent scrolling when menu is open
-                document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-            });
 
-            // Close menu when a link is clicked
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburger.classList.remove('active');
-                    navLinks.classList.remove('active');
-                    document.body.style.overflow = '';
-                });
+        hamburger.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active', isOpen);
+            hamburger.setAttribute('aria-expanded', String(isOpen));
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        });
+
+        navLinks.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+                hamburger.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
             });
-        }
+        });
+
+        (function setContactEmail() {
+            const user = 'fadil';
+            const domain = 'orbitaxiomsystems.com';
+            const email = user + '@' + domain;
+            const subject = encodeURIComponent('Orbit Axiom inquiry');
+            const mailto = 'mailto:' + email + '?subject=' + subject;
+
+            const emailEl = document.getElementById('contact-email');
+            emailEl.href = mailto;
+            emailEl.textContent = email;
+
+            document.querySelectorAll('.contact-mail-link').forEach((link) => {
+                link.href = mailto;
+            });
+        })();
     </script>
 </body>
 </html>
