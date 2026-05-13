@@ -521,6 +521,88 @@
             color: var(--warning);
         }
         
+        /* Multi-Phenomenology Channel State strip */
+        .channel-state {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        @media (max-width: 900px) {
+            .channel-state {
+                grid-template-columns: 1fr;
+            }
+        }
+        .channel-state-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .channel-state-verdict {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 0.4rem;
+        }
+        .channel-state-help {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            line-height: 1.4;
+        }
+        .channel-tiles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        @media (max-width: 700px) {
+            .channel-tiles { grid-template-columns: 1fr; }
+        }
+        .channel-tile {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-left-width: 3px;
+            border-radius: 4px 6px 6px 4px;
+            padding: 0.75rem 1rem;
+        }
+        .channel-tile.state-ok    { border-left-color: var(--success); }
+        .channel-tile.state-warn  { border-left-color: var(--warning); }
+        .channel-tile.state-alert { border-left-color: var(--danger); }
+        .channel-tile.state-idle  { border-left-color: var(--text-muted); }
+        .channel-tile-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .channel-tile-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+        .channel-tile-state {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+        }
+        .state-ok    .channel-tile-state { color: var(--success); }
+        .state-warn  .channel-tile-state { color: var(--warning); }
+        .state-alert .channel-tile-state { color: var(--danger); }
+        .state-idle  .channel-tile-state { color: var(--text-muted); }
+
+        /* GloTEC panel spans full width like SDO */
+        .glotec-panel { grid-column: span 2; }
+        @media (max-width: 1200px) {
+            .glotec-panel { grid-column: span 1; }
+        }
+
         /* Mobile Responsive */
         @media (max-width: 900px) {
             nav {
@@ -658,6 +740,11 @@
                 <div class="condition-unit">nT</div>
             </div>
             <div class="condition-card">
+                <div class="condition-label">GloTEC |anom|<sub>max</sub></div>
+                <div class="condition-value" id="tecValue">--</div>
+                <div class="condition-unit">TECU</div>
+            </div>
+            <div class="condition-card">
                 <div class="condition-label">Coronal Holes</div>
                 <div class="condition-value value-normal" id="chValue">--</div>
                 <div class="condition-unit">detected</div>
@@ -669,6 +756,32 @@
             </div>
         </div>
         
+        <!-- Multi-Phenomenology Channel State -->
+        <div class="channel-state">
+            <div>
+                <div class="channel-state-title">🛰️ Multi-Phenomenology Channel State</div>
+                <div class="channel-state-verdict" id="channelVerdict">— awaiting data —</div>
+                <div class="channel-state-help">Three physically independent channels — solar wind, geomagnetic, ionospheric. When two or more deviate from quiet baselines together, the system flags a multi-channel anomaly.</div>
+            </div>
+            <div class="channel-tiles">
+                <div class="channel-tile state-idle" id="tileBz">
+                    <div class="channel-tile-label">IMF Bz · L1</div>
+                    <div class="channel-tile-value" id="tileBzValue">— <span style="font-size:0.7rem;color:var(--text-muted)">nT</span></div>
+                    <div class="channel-tile-state" id="tileBzState">idle</div>
+                </div>
+                <div class="channel-tile state-idle" id="tileHp">
+                    <div class="channel-tile-label">GOES Hp · GEO</div>
+                    <div class="channel-tile-value" id="tileHpValue">— <span style="font-size:0.7rem;color:var(--text-muted)">nT</span></div>
+                    <div class="channel-tile-state" id="tileHpState">idle</div>
+                </div>
+                <div class="channel-tile state-idle" id="tileTec">
+                    <div class="channel-tile-label">GloTEC |anom|<sub>max</sub></div>
+                    <div class="channel-tile-value" id="tileTecValue">— <span style="font-size:0.7rem;color:var(--text-muted)">TECU</span></div>
+                    <div class="channel-tile-state" id="tileTecState">idle</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Dashboard Grid -->
         <div class="dashboard-grid">
             <!-- L1 Solar Wind -->
@@ -747,6 +860,30 @@
                 </div>
             </div>
             
+            <!-- GloTEC Ionosphere -->
+            <div class="panel glotec-panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">🌐 GloTEC Ionosphere</div>
+                        <div class="panel-subtitle">NOAA SWPC Global TEC · 10-min cadence · threat-belt 25–55°N</div>
+                    </div>
+                    <div class="time-selector" id="tecTimeSelector">
+                        <button class="time-btn" data-hours="6">6H</button>
+                        <button class="time-btn active" data-hours="24">24H</button>
+                        <button class="time-btn" data-hours="72">3D</button>
+                        <button class="time-btn" data-hours="168">7D</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="tecChart" class="chart-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Awaiting GloTEC ingest...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- SDO Solar Monitor -->
             <div class="panel sdo-panel">
                 <div class="panel-header">
@@ -826,6 +963,7 @@
             sdoImageUrl: '../data/sdo_dashboard.jpg',
             sdoMetadataUrl: '../data/sdo_metadata.json',
             spaceWeatherUrl: '../data/space_weather.json',
+            glotecHistoryUrl: '../data/glotec_history.json',
             
             // NOAA SWPC direct endpoints for time series
             noaaPlasmaUrl: 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json',
@@ -879,10 +1017,21 @@
         // State
         let l1Hours = 24;
         let goesHours = 6;
+        let tecHours = 24;
         let plasmaData = [];
         let magData = [];
         let goesPrimaryData = [];
         let goesSecondaryData = [];
+        let tecData = [];
+        let tecLatest = null;
+
+        // Channel-state thresholds for the multi-phenomenology fusion view.
+        // These are dashboard-only heuristics, not detection-grade.
+        const CHANNEL_THRESHOLDS = {
+            bz:  { warn: -5,  alert: -10 },   // southward IMF Bz (nT)
+            hp:  { warn: 25,  alert: 50 },    // |Hp - 100 nT| deviation (nT)
+            tec: { warn: 12,  alert: 20 },    // GloTEC |anom|_max (TECU)
+        };
         
         // Component visibility
         let showComponents = {
@@ -992,6 +1141,34 @@
             }
         }
         
+        async function fetchGloTECData() {
+            try {
+                const response = await fetch(CONFIG.glotecHistoryUrl + '?t=' + Date.now());
+                if (!response.ok) {
+                    // 404 is expected until the Cloud Function publishes the first file
+                    tecData = [];
+                    tecLatest = null;
+                    return [];
+                }
+                const payload = await response.json();
+                const history = Array.isArray(payload.history) ? payload.history : [];
+                tecData = history.map(p => ({
+                    time: new Date(p.time),
+                    global_mean_tec:        p.global_mean_tec,
+                    anom_max_abs:           p.anom_max_abs,
+                    anom_rms:               p.anom_rms,
+                    threat_belt_anom_mean:  p.threat_belt_anom_mean,
+                })).filter(d => !isNaN(d.time.getTime()));
+                tecLatest = payload.latest || (history.length ? history[history.length - 1] : null);
+                return tecData;
+            } catch (error) {
+                console.error('Error fetching GloTEC data:', error);
+                tecData = [];
+                tecLatest = null;
+                return [];
+            }
+        }
+
         async function fetchOurData() {
             try {
                 const [sdoRes, swRes] = await Promise.allSettled([
@@ -1060,8 +1237,77 @@
                 document.getElementById('hpValue').textContent = latest.Hp.toFixed(1);
             }
             
-            document.getElementById('lastUpdate').textContent = 
+            if (tecLatest) {
+                const tecEl = document.getElementById('tecValue');
+                const v = tecLatest.anom_max_abs;
+                tecEl.textContent = (v != null) ? v.toFixed(1) : '--';
+                tecEl.className = 'condition-value ' +
+                    (v > CHANNEL_THRESHOLDS.tec.alert ? 'value-high'
+                        : v > CHANNEL_THRESHOLDS.tec.warn ? 'value-elevated' : 'value-normal');
+            }
+
+            updateChannelState();
+
+            document.getElementById('lastUpdate').textContent =
                 'Last updated: ' + new Date().toLocaleString();
+        }
+
+        function classifyChannel(value, thresholds, comparator) {
+            // comparator: 'less' (more-negative is worse) or 'abs' (larger magnitude is worse)
+            if (value == null || isNaN(value)) return 'idle';
+            if (comparator === 'less') {
+                if (value <= thresholds.alert) return 'alert';
+                if (value <= thresholds.warn)  return 'warn';
+                return 'ok';
+            }
+            const m = Math.abs(value);
+            if (m >= thresholds.alert) return 'alert';
+            if (m >= thresholds.warn)  return 'warn';
+            return 'ok';
+        }
+
+        function applyTileState(tileId, valueId, stateId, value, unit, fmt, state) {
+            const tile  = document.getElementById(tileId);
+            const valEl = document.getElementById(valueId);
+            const stEl  = document.getElementById(stateId);
+            tile.classList.remove('state-ok', 'state-warn', 'state-alert', 'state-idle');
+            tile.classList.add('state-' + state);
+            const valTxt = (value == null || isNaN(value)) ? '—' : fmt(value);
+            valEl.innerHTML = `${valTxt} <span style="font-size:0.7rem;color:var(--text-muted)">${unit}</span>`;
+            const labels = { ok: 'quiet', warn: 'elevated', alert: 'anomaly', idle: 'idle' };
+            stEl.textContent = labels[state];
+        }
+
+        function updateChannelState() {
+            const bz  = magData.length ? magData[magData.length - 1].bz  : null;
+            const hpL = goesPrimaryData.length ? goesPrimaryData[goesPrimaryData.length - 1].Hp : null;
+            const hpDeviation = (hpL == null) ? null : (hpL - 100);
+            const tec = tecLatest ? tecLatest.anom_max_abs : null;
+
+            const bzState  = classifyChannel(bz,           CHANNEL_THRESHOLDS.bz,  'less');
+            const hpState  = classifyChannel(hpDeviation,  CHANNEL_THRESHOLDS.hp,  'abs');
+            const tecState = classifyChannel(tec,          CHANNEL_THRESHOLDS.tec, 'abs');
+
+            applyTileState('tileBz',  'tileBzValue',  'tileBzState',  bz,  'nT',    v => v.toFixed(1), bzState);
+            applyTileState('tileHp',  'tileHpValue',  'tileHpState',  hpL, 'nT',    v => v.toFixed(0), hpState);
+            applyTileState('tileTec', 'tileTecValue', 'tileTecState', tec, 'TECU',  v => v.toFixed(1), tecState);
+
+            const elevated = [bzState, hpState, tecState].filter(s => s === 'warn' || s === 'alert').length;
+            const idle     = [bzState, hpState, tecState].filter(s => s === 'idle').length;
+            const verdict = document.getElementById('channelVerdict');
+            if (idle === 3) {
+                verdict.textContent = '— awaiting data —';
+                verdict.style.color = 'var(--text-muted)';
+            } else if (elevated >= 2) {
+                verdict.textContent = '⚠ Multi-channel anomaly';
+                verdict.style.color = 'var(--danger)';
+            } else if (elevated === 1) {
+                verdict.textContent = 'Single-channel anomaly';
+                verdict.style.color = 'var(--warning)';
+            } else {
+                verdict.textContent = '✓ Quiet across channels';
+                verdict.style.color = 'var(--success)';
+            }
         }
         
         function updateAlerts(detections) {
@@ -1323,6 +1569,58 @@
             Plotly.newPlot('goesChart', traces, layout, plotConfig);
         }
         
+        function plotGloTECChart() {
+            const filtered = filterByHours(tecData, tecHours);
+            if (filtered.length === 0) {
+                document.getElementById('tecChart').innerHTML =
+                    '<div class="loading"><div>Awaiting GloTEC ingest from cloud function...</div></div>';
+                return;
+            }
+
+            const t = filtered.map(d => d.time);
+            const traces = [
+                {
+                    name: 'Global mean TEC',
+                    x: t,
+                    y: filtered.map(d => d.global_mean_tec),
+                    type: 'scatter', mode: 'lines',
+                    line: { color: '#4a9eff', width: 1.5 },
+                    xaxis: 'x', yaxis: 'y',
+                },
+                {
+                    name: 'Max |anomaly|',
+                    x: t,
+                    y: filtered.map(d => d.anom_max_abs),
+                    type: 'scatter', mode: 'lines',
+                    line: { color: '#ffcc00', width: 1.5 },
+                    xaxis: 'x2', yaxis: 'y2',
+                },
+                {
+                    name: 'Threat-belt anom (25–55°N mean)',
+                    x: t,
+                    y: filtered.map(d => d.threat_belt_anom_mean),
+                    type: 'scatter', mode: 'lines',
+                    line: { color: '#ff6b6b', width: 1.5 },
+                    xaxis: 'x3', yaxis: 'y3',
+                },
+            ];
+
+            const layout = {
+                ...darkLayout,
+                grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
+                xaxis:  { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y'  },
+                xaxis2: { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y2' },
+                xaxis3: { ...darkLayout.xaxis, showticklabels: true,  tickformat: '%m/%d %H:%M',
+                                              domain: [0, 1], anchor: 'y3' },
+                yaxis:  { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.72, 1],    anchor: 'x'  },
+                yaxis2: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.38, 0.66], anchor: 'x2' },
+                yaxis3: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0, 0.32],    anchor: 'x3', zeroline: true, zerolinecolor: 'rgba(255,255,255,0.18)' },
+                height: 350,
+            };
+
+            Plotly.newPlot('tecChart', traces, layout, plotConfig);
+        }
+
         function loadSdoImage() {
             const img = document.getElementById('sdoImage');
             img.src = CONFIG.sdoImageUrl + '?t=' + Date.now();
@@ -1345,6 +1643,16 @@
                 this.classList.add('active');
                 goesHours = parseInt(this.dataset.hours);
                 plotGoesChart();
+            });
+        });
+
+        // GloTEC Time selector
+        document.querySelectorAll('#tecTimeSelector .time-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#tecTimeSelector .time-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                tecHours = parseInt(this.dataset.hours);
+                plotGloTECChart();
             });
         });
         
@@ -1377,14 +1685,16 @@
                 fetchMagData(),
                 fetchGoesData(),
                 fetchOurData(),
+                fetchGloTECData(),
             ]);
-            
+
             updateConditions();
             plotL1Chart();
             plotGoesChart();
+            plotGloTECChart();
             loadSdoImage();
         }
-        
+
         function startAutoRefresh() {
             setInterval(async () => {
                 await Promise.all([
@@ -1392,10 +1702,12 @@
                     fetchMagData(),
                     fetchGoesData(),
                     fetchOurData(),
+                    fetchGloTECData(),
                 ]);
                 updateConditions();
                 plotL1Chart();
                 plotGoesChart();
+                plotGloTECChart();
             }, CONFIG.refreshInterval);
             
             // Refresh SDO image every 5 minutes
