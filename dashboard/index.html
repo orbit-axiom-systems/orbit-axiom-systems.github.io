@@ -1609,25 +1609,39 @@
             ];
 
             // Pin x-axes to the selected window so the chart shows the full
-            // time range even when history is sparse.
+            // time range even when history is sparse. Plotly's grid pattern
+            // can auto-override `range` unless autorange is explicitly false,
+            // so we also relayout after newPlot.
             const xMax = new Date();
             const xMin = new Date(xMax.getTime() - tecHours * 3600 * 1000);
             const xRange = [xMin.toISOString(), xMax.toISOString()];
 
+            const xAxisBase = {
+                ...darkLayout.xaxis,
+                type: 'date',
+                autorange: false,
+                range: xRange,
+            };
+
             const layout = {
                 ...darkLayout,
                 grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
-                xaxis:  { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y',  range: xRange },
-                xaxis2: { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y2', range: xRange },
-                xaxis3: { ...darkLayout.xaxis, showticklabels: true,  tickformat: '%m/%d %H:%M',
-                                              domain: [0, 1], anchor: 'y3', range: xRange },
+                xaxis:  { ...xAxisBase, showticklabels: false, domain: [0, 1], anchor: 'y'  },
+                xaxis2: { ...xAxisBase, showticklabels: false, domain: [0, 1], anchor: 'y2' },
+                xaxis3: { ...xAxisBase, showticklabels: true,  tickformat: '%m/%d %H:%M', domain: [0, 1], anchor: 'y3' },
                 yaxis:  { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.72, 1],    anchor: 'x'  },
                 yaxis2: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.38, 0.66], anchor: 'x2' },
                 yaxis3: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0, 0.32],    anchor: 'x3', zeroline: true, zerolinecolor: 'rgba(255,255,255,0.18)' },
                 height: 350,
             };
 
-            Plotly.newPlot('tecChart', traces, layout, plotConfig);
+            Plotly.newPlot('tecChart', traces, layout, plotConfig).then(() => {
+                Plotly.relayout('tecChart', {
+                    'xaxis.range':  xRange,
+                    'xaxis2.range': xRange,
+                    'xaxis3.range': xRange,
+                });
+            });
         }
 
         function loadSdoImage() {
