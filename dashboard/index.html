@@ -1583,35 +1583,44 @@
                     name: 'Global mean TEC',
                     x: t,
                     y: filtered.map(d => d.global_mean_tec),
-                    type: 'scatter', mode: 'lines',
+                    type: 'scatter', mode: 'lines+markers',
                     line: { color: '#4a9eff', width: 1.5 },
+                    marker: { size: 5, color: '#4a9eff' },
                     xaxis: 'x', yaxis: 'y',
                 },
                 {
                     name: 'Max |anomaly|',
                     x: t,
                     y: filtered.map(d => d.anom_max_abs),
-                    type: 'scatter', mode: 'lines',
+                    type: 'scatter', mode: 'lines+markers',
                     line: { color: '#ffcc00', width: 1.5 },
+                    marker: { size: 5, color: '#ffcc00' },
                     xaxis: 'x2', yaxis: 'y2',
                 },
                 {
                     name: 'Threat-belt anom (25–55°N mean)',
                     x: t,
                     y: filtered.map(d => d.threat_belt_anom_mean),
-                    type: 'scatter', mode: 'lines',
+                    type: 'scatter', mode: 'lines+markers',
                     line: { color: '#ff6b6b', width: 1.5 },
+                    marker: { size: 5, color: '#ff6b6b' },
                     xaxis: 'x3', yaxis: 'y3',
                 },
             ];
 
+            // Pin x-axes to the selected window so the chart shows the full
+            // time range even when history is sparse.
+            const xMax = new Date();
+            const xMin = new Date(xMax.getTime() - tecHours * 3600 * 1000);
+            const xRange = [xMin.toISOString(), xMax.toISOString()];
+
             const layout = {
                 ...darkLayout,
                 grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
-                xaxis:  { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y'  },
-                xaxis2: { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y2' },
+                xaxis:  { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y',  range: xRange },
+                xaxis2: { ...darkLayout.xaxis, showticklabels: false, domain: [0, 1], anchor: 'y2', range: xRange },
                 xaxis3: { ...darkLayout.xaxis, showticklabels: true,  tickformat: '%m/%d %H:%M',
-                                              domain: [0, 1], anchor: 'y3' },
+                                              domain: [0, 1], anchor: 'y3', range: xRange },
                 yaxis:  { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.72, 1],    anchor: 'x'  },
                 yaxis2: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.38, 0.66], anchor: 'x2' },
                 yaxis3: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0, 0.32],    anchor: 'x3', zeroline: true, zerolinecolor: 'rgba(255,255,255,0.18)' },
