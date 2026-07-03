@@ -966,8 +966,8 @@
             glotecHistoryUrl: '../data/glotec_history.json',
             
             // NOAA SWPC direct endpoints for time series
-            noaaPlasmaUrl: 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json',
-            noaaMagUrl: 'https://services.swpc.noaa.gov/products/solar-wind/mag-7-day.json',
+            noaaPlasmaUrl: 'https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json',
+            noaaMagUrl: 'https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json',
             noaaInstrumentUrl: 'https://services.swpc.noaa.gov/json/goes/instrument-sources.json',
             
             refreshInterval: 60000, // 1 minute
@@ -1075,12 +1075,18 @@
             try {
                 const response = await fetch(CONFIG.noaaPlasmaUrl);
                 const data = await response.json();
-                plasmaData = data.slice(1).map(row => ({
-                    time: new Date(row[0]),
-                    density: parseFloat(row[1]),
-                    speed: parseFloat(row[2]),
-                    temperature: parseFloat(row[3]),
-                })).filter(d => !isNaN(d.speed) && d.speed > 0);
+                // NOAA RTSW feed: array of per-record objects with multiple
+                // interleaved spacecraft (IMAP/ACE/SOLAR1) marked by `active`.
+                // Keep the operational-primary source, then sort chronologically.
+                const activeP = data.filter(r => r.active);
+                const rowsP = activeP.length ? activeP : data;
+                plasmaData = rowsP.map(r => ({
+                    time: new Date(r.time_tag),
+                    density: parseFloat(r.proton_density),
+                    speed: parseFloat(r.proton_speed),
+                    temperature: parseFloat(r.proton_temperature),
+                })).filter(d => !isNaN(d.speed) && d.speed > 0)
+                   .sort((a, b) => a.time - b.time);
                 return plasmaData;
             } catch (error) {
                 console.error('Error fetching plasma data:', error);
@@ -1092,13 +1098,16 @@
             try {
                 const response = await fetch(CONFIG.noaaMagUrl);
                 const data = await response.json();
-                magData = data.slice(1).map(row => ({
-                    time: new Date(row[0]),
-                    bx: parseFloat(row[1]),
-                    by: parseFloat(row[2]),
-                    bz: parseFloat(row[3]),
-                    bt: parseFloat(row[6]),
-                })).filter(d => !isNaN(d.bt));
+                const activeM = data.filter(r => r.active);
+                const rowsM = activeM.length ? activeM : data;
+                magData = rowsM.map(r => ({
+                    time: new Date(r.time_tag),
+                    bx: parseFloat(r.bx_gsm),
+                    by: parseFloat(r.by_gsm),
+                    bz: parseFloat(r.bz_gsm),
+                    bt: parseFloat(r.bt),
+                })).filter(d => !isNaN(d.bt))
+                   .sort((a, b) => a.time - b.time);
                 return magData;
             } catch (error) {
                 console.error('Error fetching mag data:', error);
