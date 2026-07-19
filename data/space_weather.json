@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-19T18:50:58.517241",
+  "timestamp": "2026-07-19T17:01:30.072528",
   "l1": {
-    "time": "2026-07-19 18:44:00",
-    "speed": 299.6,
-    "density": 3.07,
-    "bt": 3.87,
-    "bz_gsm": -1.24,
-    "pressure_dyn": 0.46090782990112006
+    "time": "2026-07-19 16:55:00",
+    "speed": 310.4,
+    "density": 2.62,
+    "bt": null,
+    "bz_gsm": null,
+    "pressure_dyn": 0.42221806292992
   },
   "goes": {
     "G18": {
@@ -24,10 +24,17 @@
       "mlt_sector": "DUSK"
     }
   },
-  "tec": {},
+  "tec": {
+    "time": "2026-07-19T21:25:00Z",
+    "global_mean_tec": 16.891944264466318,
+    "anom_max_abs": 12.090275218553387,
+    "anom_rms": 2.3178563147600113,
+    "threat_belt_anom_mean": -0.17682296729067587,
+    "quality_pct": 72.68518518518519
+  },
   "detections": {
     "ip_shocks": [],
     "ssc_events": []
   },
-  "published_at": "2026-07-19T21:50:52.994259Z"
+  "published_at": "2026-07-19T21:52:12.276269Z"
 }
