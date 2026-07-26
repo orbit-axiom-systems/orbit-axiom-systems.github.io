@@ -1,6 +1,13 @@
 {
-  "timestamp": "2026-07-26T12:13:08.715410",
-  "l1": {},
+  "timestamp": "2026-07-26T09:50:20.914903",
+  "l1": {
+    "time": "2026-07-26 09:45:00",
+    "speed": 501.37,
+    "density": 0.96,
+    "bt": null,
+    "bz_gsm": null,
+    "pressure_dyn": 0.4036268172508224
+  },
   "goes": {
     "G19": {
       "time": "2026-07-26 12:17:00+00:00",
@@ -17,17 +24,10 @@
       "mlt_sector": "DAWN"
     }
   },
-  "tec": {
-    "time": "2026-07-26T11:45:00Z",
-    "global_mean_tec": 20.851895385222242,
-    "anom_max_abs": 12.692489441292913,
-    "anom_rms": 3.1910337924357033,
-    "threat_belt_anom_mean": 2.8300510194178874,
-    "quality_pct": 72.68518518518519
-  },
+  "tec": {},
   "detections": {
     "ip_shocks": [],
     "ssc_events": []
   },
-  "published_at": "2026-07-26T12:21:12.524846Z"
+  "published_at": "2026-07-26T12:21:19.016856Z"
 }
