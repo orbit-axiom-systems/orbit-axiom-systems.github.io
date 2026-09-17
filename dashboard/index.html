@@ -597,11 +597,24 @@
         .state-alert .channel-tile-state { color: var(--danger); }
         .state-idle  .channel-tile-state { color: var(--text-muted); }
 
-        /* GloTEC panel spans full width like SDO */
-        .glotec-panel { grid-column: span 2; }
-        @media (max-width: 1200px) {
-            .glotec-panel { grid-column: span 1; }
+        /* Staleness: our own published files can freeze while the
+           browser-fetched NOAA charts keep updating, so say so loudly. */
+        .stale-value { color: var(--text-muted) !important; position: relative; }
+        .stale-value::after {
+            content: '!';
+            position: absolute; top: -0.35rem; right: -0.7rem;
+            font-size: 0.6rem; font-weight: 700; color: var(--danger);
         }
+        .stale-banner {
+            display: none;
+            margin: 0 0 1.5rem 0; padding: 0.85rem 1.1rem;
+            border: 1px solid var(--danger); border-left-width: 4px;
+            border-radius: 6px; background: rgba(255,107,107,0.08);
+            color: var(--danger); font-size: 0.85rem; line-height: 1.5;
+        }
+        .stale-banner.visible { display: block; }
+        .stale-banner strong { font-weight: 700; }
+        .last-update.stale-value { color: var(--danger) !important; }
 
         /* Mobile Responsive */
         @media (max-width: 900px) {
@@ -711,6 +724,8 @@
             <p class="page-subtitle">Real-time monitoring from Sun to Earth</p>
             <p class="last-update" id="lastUpdate">Loading...</p>
         </div>
+
+        <div class="stale-banner" id="staleBanner"></div>
         
         <!-- Current Conditions -->
         <div class="conditions-grid">
@@ -740,11 +755,6 @@
                 <div class="condition-unit">nT</div>
             </div>
             <div class="condition-card">
-                <div class="condition-label">GloTEC |anom|<sub>max</sub></div>
-                <div class="condition-value" id="tecValue">--</div>
-                <div class="condition-unit">TECU</div>
-            </div>
-            <div class="condition-card">
                 <div class="condition-label">Coronal Holes</div>
                 <div class="condition-value value-normal" id="chValue">--</div>
                 <div class="condition-unit">detected</div>
@@ -761,7 +771,7 @@
             <div>
                 <div class="channel-state-title">🛰️ Multi-Phenomenology Channel State</div>
                 <div class="channel-state-verdict" id="channelVerdict">— awaiting data —</div>
-                <div class="channel-state-help">Three physically independent channels — solar wind, geomagnetic, ionospheric. When two or more deviate from quiet baselines together, the system flags a multi-channel anomaly.</div>
+                <div class="channel-state-help">Two physically independent channels — solar wind and geomagnetic. When both deviate from quiet baselines together, the system flags a multi-channel anomaly.</div>
             </div>
             <div class="channel-tiles">
                 <div class="channel-tile state-idle" id="tileBz">
@@ -773,11 +783,6 @@
                     <div class="channel-tile-label">GOES Hp · GEO</div>
                     <div class="channel-tile-value" id="tileHpValue">— <span style="font-size:0.7rem;color:var(--text-muted)">nT</span></div>
                     <div class="channel-tile-state" id="tileHpState">idle</div>
-                </div>
-                <div class="channel-tile state-idle" id="tileTec">
-                    <div class="channel-tile-label">GloTEC |anom|<sub>max</sub></div>
-                    <div class="channel-tile-value" id="tileTecValue">— <span style="font-size:0.7rem;color:var(--text-muted)">TECU</span></div>
-                    <div class="channel-tile-state" id="tileTecState">idle</div>
                 </div>
             </div>
         </div>
@@ -860,30 +865,6 @@
                 </div>
             </div>
             
-            <!-- GloTEC Ionosphere -->
-            <div class="panel glotec-panel">
-                <div class="panel-header">
-                    <div>
-                        <div class="panel-title">🌐 GloTEC Ionosphere</div>
-                        <div class="panel-subtitle">NOAA SWPC Global TEC · 10-min cadence · threat-belt 25–55°N</div>
-                    </div>
-                    <div class="time-selector" id="tecTimeSelector">
-                        <button class="time-btn" data-hours="6">6H</button>
-                        <button class="time-btn active" data-hours="24">24H</button>
-                        <button class="time-btn" data-hours="72">3D</button>
-                        <button class="time-btn" data-hours="168">7D</button>
-                    </div>
-                </div>
-                <div class="panel-content">
-                    <div id="tecChart" class="chart-container">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            Awaiting GloTEC ingest...
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- SDO Solar Monitor -->
             <div class="panel sdo-panel">
                 <div class="panel-header">
@@ -963,7 +944,6 @@
             sdoImageUrl: '../data/sdo_dashboard.jpg',
             sdoMetadataUrl: '../data/sdo_metadata.json',
             spaceWeatherUrl: '../data/space_weather.json',
-            glotecHistoryUrl: '../data/glotec_history.json',
             
             // NOAA SWPC direct endpoints for time series
             noaaPlasmaUrl: 'https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json',
@@ -1017,22 +997,54 @@
         // State
         let l1Hours = 24;
         let goesHours = 6;
-        let tecHours = 24;
         let plasmaData = [];
         let magData = [];
         let goesPrimaryData = [];
         let goesSecondaryData = [];
-        let tecData = [];
-        let tecLatest = null;
 
         // Channel-state thresholds for the multi-phenomenology fusion view.
         // These are dashboard-only heuristics, not detection-grade.
         const CHANNEL_THRESHOLDS = {
             bz:  { warn: -5,  alert: -10 },   // southward IMF Bz (nT)
             hp:  { warn: 25,  alert: 50 },    // |Hp - 100 nT| deviation (nT)
-            tec: { warn: 12,  alert: 20 },    // GloTEC |anom|_max (TECU)
         };
         
+        // --- Data freshness -------------------------------------------------
+        // The solar-wind and GOES charts are fetched from NOAA by the browser
+        // and are always current. The SDO image, CH/AR counts and detections
+        // come from files our Cloud Functions publish to this repo, and those
+        // can freeze without any visible symptom. Track their real publish
+        // time and surface it, rather than stamping the page with Date.now().
+        const STALE_AFTER_MS = 2 * 60 * 60 * 1000;   // SDO publishes hourly
+        let oasPublishedAt = null;   // Date of newest published_at we have seen
+
+        // Our JSON carries both tz-aware ('...Z') and naive timestamps; treat
+        // the naive ones as UTC instead of letting Date() assume local time.
+        function parseUtc(v) {
+            if (!v) return null;
+            const s = /[Zz]|[+-]\d{2}:?\d{2}$/.test(v) ? v : v + 'Z';
+            const d = new Date(s);
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function formatAge(ms) {
+            const min = Math.round(ms / 60000);
+            if (min < 1)  return 'just now';
+            if (min < 60) return min + ' min old';
+            const hr = Math.round(min / 60);
+            if (hr < 48)  return hr + ' h old';
+            return Math.round(hr / 24) + ' days old';
+        }
+
+        function utcStamp(d) {
+            return d.toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+        }
+
+        function markStale(id, isStale) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('stale-value', isStale);
+        }
+
         // Component visibility
         let showComponents = {
             Hp: true,
@@ -1150,34 +1162,6 @@
             }
         }
         
-        async function fetchGloTECData() {
-            try {
-                const response = await fetch(CONFIG.glotecHistoryUrl + '?t=' + Date.now());
-                if (!response.ok) {
-                    // 404 is expected until the Cloud Function publishes the first file
-                    tecData = [];
-                    tecLatest = null;
-                    return [];
-                }
-                const payload = await response.json();
-                const history = Array.isArray(payload.history) ? payload.history : [];
-                tecData = history.map(p => ({
-                    time: new Date(p.time),
-                    global_mean_tec:        p.global_mean_tec,
-                    anom_max_abs:           p.anom_max_abs,
-                    anom_rms:               p.anom_rms,
-                    threat_belt_anom_mean:  p.threat_belt_anom_mean,
-                })).filter(d => !isNaN(d.time.getTime()));
-                tecLatest = payload.latest || (history.length ? history[history.length - 1] : null);
-                return tecData;
-            } catch (error) {
-                console.error('Error fetching GloTEC data:', error);
-                tecData = [];
-                tecLatest = null;
-                return [];
-            }
-        }
-
         async function fetchOurData() {
             try {
                 const [sdoRes, swRes] = await Promise.allSettled([
@@ -1185,22 +1169,34 @@
                     fetch(CONFIG.spaceWeatherUrl + '?t=' + Date.now()),
                 ]);
                 
+                oasPublishedAt = null;
+
                 if (sdoRes.status === 'fulfilled' && sdoRes.value.ok) {
                     const sdo = await sdoRes.value.json();
                     document.getElementById('chCount').textContent = sdo.coronal_holes || '--';
                     document.getElementById('arCount').textContent = sdo.active_regions || '--';
                     document.getElementById('chValue').textContent = sdo.coronal_holes || '--';
                     document.getElementById('arValue').textContent = sdo.active_regions || '--';
-                    
-                    if (sdo.timestamp) {
-                        document.getElementById('sdoUpdate').textContent = 
-                            'Updated: ' + new Date(sdo.timestamp).toLocaleTimeString();
+
+                    const pub = parseUtc(sdo.published_at) || parseUtc(sdo.timestamp);
+                    if (pub && (!oasPublishedAt || pub > oasPublishedAt)) oasPublishedAt = pub;
+
+                    const obs = parseUtc(sdo.timestamp);
+                    if (obs) {
+                        // Full date, not just time-of-day: a six-week-old frame
+                        // must not be able to read as 'this afternoon'.
+                        const age = Date.now() - obs.getTime();
+                        const el = document.getElementById('sdoUpdate');
+                        el.textContent = utcStamp(obs) + ' · ' + formatAge(age);
+                        el.classList.toggle('stale-value', age > STALE_AFTER_MS);
                     }
                 }
-                
+
                 if (swRes.status === 'fulfilled' && swRes.value.ok) {
                     const sw = await swRes.value.json();
                     updateAlerts(sw.detections || {});
+                    const pub = parseUtc(sw.published_at) || parseUtc(sw.timestamp);
+                    if (pub && (!oasPublishedAt || pub > oasPublishedAt)) oasPublishedAt = pub;
                 }
             } catch (error) {
                 console.error('Error fetching our data:', error);
@@ -1246,19 +1242,46 @@
                 document.getElementById('hpValue').textContent = latest.Hp.toFixed(1);
             }
             
-            if (tecLatest) {
-                const tecEl = document.getElementById('tecValue');
-                const v = tecLatest.anom_max_abs;
-                tecEl.textContent = (v != null) ? v.toFixed(1) : '--';
-                tecEl.className = 'condition-value ' +
-                    (v > CHANNEL_THRESHOLDS.tec.alert ? 'value-high'
-                        : v > CHANNEL_THRESHOLDS.tec.warn ? 'value-elevated' : 'value-normal');
+            updateChannelState();
+            updateFreshness();
+        }
+
+        // Report the real age of our published data. Previously this printed
+        // new Date(), i.e. the browser clock, so the page claimed to be fresh
+        // no matter how long publishing had been broken.
+        function updateFreshness() {
+            const stampEl  = document.getElementById('lastUpdate');
+            const bannerEl = document.getElementById('staleBanner');
+            const age   = oasPublishedAt ? Date.now() - oasPublishedAt.getTime() : null;
+            const stale = (age === null) || (age > STALE_AFTER_MS);
+
+            ['chValue', 'arValue', 'chCount', 'arCount'].forEach(id => markStale(id, stale));
+            stampEl.classList.toggle('stale-value', stale);
+
+            if (age === null) {
+                stampEl.textContent = 'Solar-disk data unavailable · live NOAA charts below are current';
+                bannerEl.classList.add('visible');
+                bannerEl.innerHTML =
+                    '<strong>Solar-disk feed unavailable.</strong> Coronal-hole and active-region ' +
+                    'counts and the SDO image could not be loaded. The solar-wind and GOES charts ' +
+                    'below are fetched live from NOAA and are unaffected.';
+                return;
             }
 
-            updateChannelState();
+            stampEl.textContent = 'Solar-disk data ' + formatAge(age) +
+                ' (published ' + utcStamp(oasPublishedAt) + ') · NOAA charts live';
 
-            document.getElementById('lastUpdate').textContent =
-                'Last updated: ' + new Date().toLocaleString();
+            if (stale) {
+                bannerEl.classList.add('visible');
+                bannerEl.innerHTML =
+                    '<strong>Solar-disk data is ' + formatAge(age) + '.</strong> Last published ' +
+                    utcStamp(oasPublishedAt) + '. The SDO image, coronal-hole and active-region ' +
+                    'counts and event detections below are from that time, not now. The solar-wind ' +
+                    'and GOES charts are fetched live from NOAA and remain current.';
+            } else {
+                bannerEl.classList.remove('visible');
+                bannerEl.innerHTML = '';
+            }
         }
 
         function classifyChannel(value, thresholds, comparator) {
@@ -1291,20 +1314,17 @@
             const bz  = magData.length ? magData[magData.length - 1].bz  : null;
             const hpL = goesPrimaryData.length ? goesPrimaryData[goesPrimaryData.length - 1].Hp : null;
             const hpDeviation = (hpL == null) ? null : (hpL - 100);
-            const tec = tecLatest ? tecLatest.anom_max_abs : null;
 
             const bzState  = classifyChannel(bz,           CHANNEL_THRESHOLDS.bz,  'less');
             const hpState  = classifyChannel(hpDeviation,  CHANNEL_THRESHOLDS.hp,  'abs');
-            const tecState = classifyChannel(tec,          CHANNEL_THRESHOLDS.tec, 'abs');
 
             applyTileState('tileBz',  'tileBzValue',  'tileBzState',  bz,  'nT',    v => v.toFixed(1), bzState);
             applyTileState('tileHp',  'tileHpValue',  'tileHpState',  hpL, 'nT',    v => v.toFixed(0), hpState);
-            applyTileState('tileTec', 'tileTecValue', 'tileTecState', tec, 'TECU',  v => v.toFixed(1), tecState);
 
-            const elevated = [bzState, hpState, tecState].filter(s => s === 'warn' || s === 'alert').length;
-            const idle     = [bzState, hpState, tecState].filter(s => s === 'idle').length;
+            const elevated = [bzState, hpState].filter(s => s === 'warn' || s === 'alert').length;
+            const idle     = [bzState, hpState].filter(s => s === 'idle').length;
             const verdict = document.getElementById('channelVerdict');
-            if (idle === 3) {
+            if (idle === 2) {
                 verdict.textContent = '— awaiting data —';
                 verdict.style.color = 'var(--text-muted)';
             } else if (elevated >= 2) {
@@ -1578,81 +1598,6 @@
             Plotly.newPlot('goesChart', traces, layout, plotConfig);
         }
         
-        function plotGloTECChart() {
-            const filtered = filterByHours(tecData, tecHours);
-            if (filtered.length === 0) {
-                document.getElementById('tecChart').innerHTML =
-                    '<div class="loading"><div>Awaiting GloTEC ingest from cloud function...</div></div>';
-                return;
-            }
-
-            const t = filtered.map(d => d.time);
-            const traces = [
-                {
-                    name: 'Global mean TEC',
-                    x: t,
-                    y: filtered.map(d => d.global_mean_tec),
-                    type: 'scatter', mode: 'lines+markers',
-                    line: { color: '#4a9eff', width: 1.5 },
-                    marker: { size: 5, color: '#4a9eff' },
-                    xaxis: 'x', yaxis: 'y',
-                },
-                {
-                    name: 'Max |anomaly|',
-                    x: t,
-                    y: filtered.map(d => d.anom_max_abs),
-                    type: 'scatter', mode: 'lines+markers',
-                    line: { color: '#ffcc00', width: 1.5 },
-                    marker: { size: 5, color: '#ffcc00' },
-                    xaxis: 'x2', yaxis: 'y2',
-                },
-                {
-                    name: 'Threat-belt anom (25–55°N mean)',
-                    x: t,
-                    y: filtered.map(d => d.threat_belt_anom_mean),
-                    type: 'scatter', mode: 'lines+markers',
-                    line: { color: '#ff6b6b', width: 1.5 },
-                    marker: { size: 5, color: '#ff6b6b' },
-                    xaxis: 'x3', yaxis: 'y3',
-                },
-            ];
-
-            // Pin x-axes to the selected window so the chart shows the full
-            // time range even when history is sparse. Plotly's grid pattern
-            // can auto-override `range` unless autorange is explicitly false,
-            // so we also relayout after newPlot.
-            const xMax = new Date();
-            const xMin = new Date(xMax.getTime() - tecHours * 3600 * 1000);
-            const xRange = [xMin.toISOString(), xMax.toISOString()];
-
-            const xAxisBase = {
-                ...darkLayout.xaxis,
-                type: 'date',
-                autorange: false,
-                range: xRange,
-            };
-
-            const layout = {
-                ...darkLayout,
-                grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
-                xaxis:  { ...xAxisBase, showticklabels: false, domain: [0, 1], anchor: 'y'  },
-                xaxis2: { ...xAxisBase, showticklabels: false, domain: [0, 1], anchor: 'y2' },
-                xaxis3: { ...xAxisBase, showticklabels: true,  tickformat: '%m/%d %H:%M', domain: [0, 1], anchor: 'y3' },
-                yaxis:  { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.72, 1],    anchor: 'x'  },
-                yaxis2: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0.38, 0.66], anchor: 'x2' },
-                yaxis3: { ...darkLayout.yaxis, title: { text: 'TECU',  font: { size: 10 } }, domain: [0, 0.32],    anchor: 'x3', zeroline: true, zerolinecolor: 'rgba(255,255,255,0.18)' },
-                height: 350,
-            };
-
-            Plotly.newPlot('tecChart', traces, layout, plotConfig).then(() => {
-                Plotly.relayout('tecChart', {
-                    'xaxis.range':  xRange,
-                    'xaxis2.range': xRange,
-                    'xaxis3.range': xRange,
-                });
-            });
-        }
-
         function loadSdoImage() {
             const img = document.getElementById('sdoImage');
             img.src = CONFIG.sdoImageUrl + '?t=' + Date.now();
@@ -1678,16 +1623,6 @@
             });
         });
 
-        // GloTEC Time selector
-        document.querySelectorAll('#tecTimeSelector .time-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('#tecTimeSelector .time-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                tecHours = parseInt(this.dataset.hours);
-                plotGloTECChart();
-            });
-        });
-        
         // Component toggles
         document.getElementById('toggleHp').addEventListener('change', function() {
             showComponents.Hp = this.checked;
@@ -1717,13 +1652,11 @@
                 fetchMagData(),
                 fetchGoesData(),
                 fetchOurData(),
-                fetchGloTECData(),
             ]);
 
             updateConditions();
             plotL1Chart();
             plotGoesChart();
-            plotGloTECChart();
             loadSdoImage();
         }
 
@@ -1734,12 +1667,10 @@
                     fetchMagData(),
                     fetchGoesData(),
                     fetchOurData(),
-                    fetchGloTECData(),
                 ]);
                 updateConditions();
                 plotL1Chart();
                 plotGoesChart();
-                plotGloTECChart();
             }, CONFIG.refreshInterval);
             
             // Refresh SDO image every 5 minutes
