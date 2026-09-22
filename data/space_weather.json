@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-09-22T10:40:16.584974",
+  "timestamp": "2026-09-22T10:50:08.889830",
   "l1": {
     "time": "2026-09-22 10:34:00",
     "speed": 408.35,
     "density": 0.0,
-    "bt": 2.73,
-    "bz_gsm": 2.54,
+    "bt": 2.7,
+    "bz_gsm": 2.63,
     "pressure_dyn": 0.0
   },
   "goes": {
@@ -25,16 +25,16 @@
     }
   },
   "tec": {
-    "time": "2026-09-22T10:15:00Z",
-    "global_mean_tec": 24.240675886932543,
-    "anom_max_abs": 13.90264266389444,
-    "anom_rms": 2.716252916162152,
-    "threat_belt_anom_mean": -0.025739930314934625,
-    "quality_pct": 75.61728395061728
+    "time": "2026-09-22T10:25:00Z",
+    "global_mean_tec": 24.91445747904691,
+    "anom_max_abs": 16.806722400719767,
+    "anom_rms": 2.7137494930599866,
+    "threat_belt_anom_mean": 0.16115195334162097,
+    "quality_pct": 74.51774691358025
   },
   "detections": {
     "ip_shocks": [],
     "ssc_events": []
   },
-  "published_at": "2026-09-22T10:41:19.332406Z"
+  "published_at": "2026-09-22T10:51:33.830649Z"
 }
